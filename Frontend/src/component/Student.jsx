@@ -10,10 +10,7 @@ const Student = () => {
 
     const handleLogout = async () => {
         try {
-            // Send a logout request to the backend
-            // await axios.get('http://localhost:8080/api/student/logout', { withCredentials: true });
-            // setAuth(null);
-            // Redirect the user to the login page
+            
             navigate('/logout');
         } catch (error) {
             console.error('Logout failed:', error);
