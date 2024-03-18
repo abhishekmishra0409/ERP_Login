@@ -31,36 +31,32 @@ const Login = () => {
           withCredentials: true
         });
       }
+      
       if (res && res.data && res.data.success) {
-        console.log(res.data)
-        alert(res.data && res.data.message);
+        alert(res.data.message);
         
-        setAuth({
-          ...auth,
-          user: res.data.user,
-          token: res.data.token,
-        });
-        localStorage.setItem("auth", JSON.stringify(res.data));
         if (role === "student") {
+          setAuth({
+            ...auth,
+            user: res.data.user,
+            token: res.data.token,
+          });
+          sessionStorage.setItem("auth", JSON.stringify(res.data));
           navigate("/student-dashboard");
         } else if (role === "teacher") {
-          navigate("/teacher-dashboard");
           setTeacherAuth({
             ...teacherauth,
             user: res.data.user,
             token: res.data.token,
           });
-          localStorage.setItem("teacher", JSON.stringify(res.data));
+          sessionStorage.setItem("teacher", JSON.stringify(res.data));
+          navigate("/teacher-dashboard");
         }
-      } else if (res && res.data && res.data.message) {
-        console.log(res.data)
-        alert(res.data.message);
       } else {
-        console.log(res.data)
-        alert("Something went wrong");
+        alert(res.data?.message || "Something went wrong");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert("Something went wrong");
     }
   };

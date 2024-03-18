@@ -8,7 +8,6 @@ const TeacherAuthProvider = ({ children }) => {
     token: "",
   });
 
-
   axios.defaults.headers.common["Authorization"] = teacherauth?.token;
 
   useEffect(() => {

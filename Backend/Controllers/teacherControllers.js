@@ -5,22 +5,25 @@ import JWT from "jsonwebtoken";
 export const createTeacherController = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    //validations
+
+    // Validations
     if (!name || !email || !password) {
-      return res.send({ error: "All field is Required" });
+      return res.status(400).send({ error: "All fields are required" });
     }
-    //check
-    const exisitingTeacher = await teacherModel.findOne({ email });
-    //exisiting user
-    if (exisitingTeacher) {
-      return res.status(200).send({
+
+    // Check if teacher already exists
+    const existingTeacher = await teacherModel.findOne({ email });
+    if (existingTeacher) {
+      return res.status(409).send({
         success: false,
-        message: "Already Register please login",
+        message: "Teacher already registered. Please login.",
       });
     }
-    //register
+
+    // Hash password
     const hashedPassword = await hashPassword(password);
-    //save
+
+    // Create teacher
     const user = await new teacherModel({
       name,
       email,
@@ -29,52 +32,58 @@ export const createTeacherController = async (req, res) => {
 
     res.status(201).send({
       success: true,
-      message: "Teacher Register Successfully",
+      message: "Teacher registered successfully",
       user,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Error in creating teacher:", error);
     res.status(500).send({
       success: false,
-      message: "Errro in Creating Teacher",
-      error,
+      message: "Error in creating teacher",
+      error: error.message,
     });
   }
 };
 
-//teacher login
+// Teacher login
 export const teacherloginController = async (req, res) => {
   try {
     const { email, password } = req.body;
-    //validation
+
+    // Validation
     if (!email || !password) {
-      return res.status(404).send({
+      return res.status(400).send({
         success: false,
-        message: "Invalid email or password",
+        message: "Email and password are required",
       });
     }
-    //check
+
+    // Check if teacher exists
     const user = await teacherModel.findOne({ email });
     if (!user) {
       return res.status(404).send({
         success: false,
-        message: "Email is not registerd",
+        message: "Email is not registered",
       });
     }
+
+    // Compare passwords
     const match = await comparePassword(password, user.password);
     if (!match) {
-      return res.status(200).send({
+      return res.status(401).send({
         success: false,
-        message: "Invalid Password",
+        message: "Invalid password",
       });
     }
-    //token
-    const token = await JWT.sign({ _id: user._id }, "teachertoken", {
+
+    // Generate JWT token
+    const token = JWT.sign({ _id: user._id }, "teacherToken", {
       expiresIn: "7d",
     });
+
     res.status(200).send({
       success: true,
-      message: "login successfully",
+      message: "Login successful",
       user: {
         name: user?.name,
         email: user?.email,
@@ -82,16 +91,16 @@ export const teacherloginController = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.log(error);
+    console.error("Error in teacher login:", error);
     res.status(500).send({
       success: false,
       message: "Error in login",
-      error,
+      error: error.message,
     });
   }
 };
 
-//test controller
+// Test controller
 export const teacherTestController = (req, res) => {
   res.send("Teacher Protected Route");
 };

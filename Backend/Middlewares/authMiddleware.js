@@ -40,62 +40,60 @@ export const authMiddleware = async (req, res, next) => {
 };
 
 // Admin access
-export const isAdmin = async (req, res, next) => {
-  try {
-    const user = await StudentModel.findById(req.student._id);
-    if (user.role !== "admin") {
-      return res.status(401).send({
-        success: false,
-        message: "Unauthorized Access",
-      });
-    } else {
-      next();
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(401).send({
-      success: false,
-      error,
-      message: "Error in admin middleware",
-    });
-  }
-};
+export const isAdmin = (req, res, next) => {
+  // Get the JWT token from the request headers or cookies
+  const token = req.headers.authorization || req.cookies.adminToken;
 
-// Teacher access
-export const isTeacher = async (req, res, next) => {
-  try {
-    const user = await TeacherModel.findById(req.user._id);
-    if (user.role !== "teacher") {
-      return res.status(401).send({
-        success: false,
-        message: "Unauthorized Access",
-      });
-    } else {
-      next();
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(401).send({
-      success: false,
-      error,
-      message: "Error in teacher middleware",
-    });
+  // Check if token is present
+  if (!token) {
+    return res.status(401).send({ message: "No token provided" });
   }
-};
 
-// Protected Routes token base
-export const requireTeacherSignIn = async (req, res, next) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decode = jwt.verify(token, "teachertoken");
-    req.user = decode;
+    // Verify the token
+    const decoded = jwt.verify(token, "adminToken");
+
+    // Check if decoded token includes admin role
+    if (decoded.role !== 'admin') {
+      return res.status(403).send({ message: "Not authorized" });
+    }
+
+    // Pass admin data to the request object
+    req.admin = decoded;
+
+    // Move to the next middleware/controller
     next();
   } catch (error) {
-    console.log(error);
+    console.error("Error verifying admin token:", error);
+    return res.status(401).send({ message: "Invalid token" });
+  }
+};
+
+export const isTeacher = async (req, res, next) => {
+  try {
+    // Extract token from Authorization header
+    const token = req.headers.authorization.split(' ')[1];
+
+    // Verify token
+    const decoded = jwt.verify(token, 'teacherToken');
+
+    // Check if user is a teacher
+    const user = await TeacherModel.findById(decoded._id);
+    if (!user || user.role !== 'teacher') {
+      return res.status(401).send({
+        success: false,
+        message: 'Unauthorized Access: User is not a teacher',
+      });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Error in teacher middleware:', error);
     res.status(401).send({
       success: false,
       error,
-      message: "Error in teacher signin middleware",
+      message: 'Error in teacher middleware',
     });
   }
 };

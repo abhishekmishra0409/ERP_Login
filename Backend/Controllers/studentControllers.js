@@ -4,11 +4,8 @@ import {
   createPasswordResetToken,
 } from "../Helper/hashFunction.js";
 import studentModel from "../Models/studentModel.js";
-import generateToken from "../Middlewares/jwtToken.js";
 import generateRefreshToken from "../Middlewares/refreshToken.js";
-import jwt from "jsonwebtoken";
 import sendEmail from "../Helper/EmailSend.js";
-import { createEmailVerificationToken } from "../Helper/EmailVerification.js";
 // import attendanceModel from "../Models/attendanceModel.js";
 
 export const registerController = async (req, res) => {
@@ -33,56 +30,16 @@ export const registerController = async (req, res) => {
       password: hashedPassword,
       batch,
     });
-    // Generate email verification token
-    const emailVerificationToken = await createEmailVerificationToken(
-      student._id
-    );
 
-    // Send verification email
-    const verificationLink = `http://localhost:8080/api/student/verify-email/${emailVerificationToken}`;
-    const emailContent = `
-      <p>Hey ${student.name},</p>
-      <p>Please click on the following link to verify your email:</p>
-      <p><a href="${verificationLink}">${verificationLink}</a></p>
-    `;
-    await sendEmail({
-      to: email,
-      subject: "Email Verification",
-      html: emailContent,
-    });
-
-    // Include the email verification token in the response
+    // Respond with success message
     res.status(200).send({
       success: true,
-      message: "Student registered successfully. Verification email sent.",
+      message: "Student registered successfully by admin.",
       student,
-      emailVerificationToken,
     });
   } catch (error) {
     console.error("Error in registration:", error);
     res.status(500).send({ success: false, message: "Error in registration" });
-  }
-};
-
-// Email verification controller
-export const verifyEmail = async (req, res) => {
-  const token = req.params.token;
-
-  try {
-    // Verify the token
-    const decoded = jwt.verify(token, "EmailVerify");
-    const userId = decoded?.studentId;
-    console.log(userId);
-
-    // Update isEmailVerified field in the database
-    await studentModel.findByIdAndUpdate(userId, { isEmailVerified: true });
-
-    res
-      .status(200)
-      .send({ success: true, message: "Email verified successfully" });
-  } catch (error) {
-    console.error("Error verifying email:", error);
-    res.status(500).send({ success: false, message: "Error verifying email" });
   }
 };
 
@@ -92,32 +49,24 @@ export const loginController = async (req, res) => {
     // Validation
     if (!email || !password) {
       return res
-        .status(400)
-        .send({ success: false, message: "Invalid email or password" });
+          .status(400)
+          .send({ success: false, message: "Invalid email or password" });
     }
 
     // Check if the student exists
     const student = await studentModel.findOne({ email });
     if (!student) {
       return res
-        .status(404)
-        .send({ success: false, message: "Email does not exist" });
-    }
-
-    // Check if the email is verified
-    if (!student.isEmailVerified) {
-      return res.status(401).send({
-        success: false,
-        message: "Email is not verified. Please verify your email first.",
-      });
+          .status(404)
+          .send({ success: false, message: "Email does not exist" });
     }
 
     // Verify the password
     const match = await comparePassword(password, student.password);
     if (!match) {
       return res
-        .status(401)
-        .send({ success: false, message: "Password does not match" });
+          .status(401)
+          .send({ success: false, message: "Password does not match" });
     }
 
     // Generate refresh token
@@ -125,30 +74,27 @@ export const loginController = async (req, res) => {
 
     // Update refresh token in the database
     await studentModel.findByIdAndUpdate(
-      student._id,
-      { refreshToken: refreshToken },
-      { new: true }
+        student._id,
+        { refreshToken: refreshToken },
+        { new: true }
     );
 
-    // Set refresh token in a cookie with expiration time
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
     });
 
-    // Respond with student details, access token, and refresh token
-    const accessToken = generateToken(student?._id);
+    // Respond with student details and refresh token
     res.json({
       _id: student?._id,
       success: true,
       message: "Login successful",
-      token: accessToken,
+      refreshToken: refreshToken,
       user: {
         name: student?.name,
         email: student?.email,
         batch: student?.batch,
-        token: accessToken,
-        refreshToken: refreshToken,
       },
     });
   } catch (error) {
@@ -156,55 +102,17 @@ export const loginController = async (req, res) => {
     res.status(500).send({ success: false, message: "Error in login" });
   }
 };
-// Handle refresh token
-export const handleRefreshToken = async (req, res) => {
-  const cookie = req.cookies;
-  // Check if refresh token is present in cookies
-  if (!cookie?.refreshToken) {
-    return res
-      .status(400)
-      .send({ success: false, message: "No Refresh Token in Cookies" });
-  }
 
-  const refreshToken = cookie.refreshToken;
-  console.log(refreshToken);
-
-  try {
-    // Find the student by refreshToken
-    const student = await studentModel.findOne({ refreshToken });
-
-    // Check if user exists
-    if (!student) {
-      return res.status(404).send({
-        success: false,
-        message: "No Refresh token present in db or not matched",
-      });
-    }
-
-    // Verify the refresh token and generate a new access token
-    jwt.verify(refreshToken, "0822IT21", (err, decoded) => {
-      if (err || student._id !== decoded.id) {
-        return res.status(401).send({
-          success: false,
-          message: "There is something wrong with refresh token",
-        });
-      }
-      const accessToken = generateToken(student._id);
-      res.json({ accessToken });
-    });
-  } catch (error) {
-    console.error("Error handling refresh token:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
-};
+// Handle refresh token - Removed the refresh token logic
 
 export const logoutController = async (req, res) => {
   const cookie = req.cookies;
+
   // Check if refresh token is present in cookies
   if (!cookie?.refreshToken) {
     return res
-      .status(400)
-      .send({ success: false, message: "No Refresh Token in Cookies" });
+        .status(400)
+        .send({ success: false, message: "No Refresh Token in Cookies" });
   }
 
   const refreshToken = cookie.refreshToken;
@@ -230,7 +138,7 @@ export const logoutController = async (req, res) => {
       httpOnly: true,
       secure: true,
     });
-    res.status(204).json({ success: true, message: "Logout Succesfully" });
+    res.status(204).json({ success: true, message: "Logout Successfully" });
   } catch (error) {
     console.error("Error logging out:", error);
     res.status(500).json({ success: false, message: "Internal server error" });

@@ -1,6 +1,5 @@
 import { useAuth } from '../context/auth';
 import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
 import logo from "../assets/AdminLTELogo.png";
 import user from "../assets/user2-160x160.jpg";
 
@@ -11,11 +10,23 @@ const Student = () => {
     const handleLogout = async () => {
         try {
             
-            navigate('/logout');
+            const response = await fetch('http://localhost:8080/api/student/logout', {
+                method: 'GET',
+                credentials: 'include', 
+            });
+    
+            if (response.ok) {
+               
+                navigate('/logout');
+            } else {
+                
+                console.error('Logout failed:', response.statusText);
+            }
         } catch (error) {
             console.error('Logout failed:', error);
         }
     };
+    
 
     return (
         <div>
