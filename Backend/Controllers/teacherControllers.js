@@ -102,3 +102,5 @@ export const teacherloginController = async (req, res) => {
 export const teacherTestController = (req, res) => {
   res.send("Teacher Protected Route");
 };
+
+

@@ -24,6 +24,6 @@ router.get(
     teacherTestController
 );
 
-router.post("/upload",isTeacher, uploadAttendance);
+router.post("/upload-attendance",isTeacher, uploadAttendance);
 
 export default router;

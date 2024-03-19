@@ -6,7 +6,7 @@ import {
 import studentModel from "../Models/studentModel.js";
 import generateRefreshToken from "../Helper/JwtToken.js";
 import sendEmail from "../Helper/EmailSend.js";
-// import attendanceModel from "../Models/attendanceModel.js";
+import AttendanceModel from "../models/attendanceModel.js";
 
 export const registerController = async (req, res) => {
   try {
@@ -17,7 +17,8 @@ export const registerController = async (req, res) => {
     }
 
     // Check if student already exists
-    const existingStudent = await studentModel.findOne({ email: email ,enrollment: enrollment });
+    const existingStudent = await studentModel.findOne({   enrollment: enrollment  });
+
     if (existingStudent) {
       return res.status(409).send({ message: "Student already exists" });
     }
@@ -120,7 +121,6 @@ export const loginController = async (req, res) => {
 
 export const viewProfileController = async (req, res) => {
   try {
-    // Get student ID from the request object
     const studentId = req.student._id;
 
     // Find the student by ID
@@ -179,7 +179,6 @@ export const logoutController = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
 
 export const updateStudent = async (req, res) => {
   const { _id } = req.student;
@@ -307,22 +306,88 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-// export const viewAttendance = async (req, res) => {
+export const getAllStudents = async (req, res) => {
+  try {
+    const queryObj = { ...req.query };
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+
+    let query = studentModel.find(JSON.parse(queryStr)).sort({ enrollment: 1 });
+    if (req.query.batch) {
+      query = query.where('batch').equals(req.query.batch);
+    }
+    const students = await query;
+    res.status(200).json({
+      success: true,
+      students
+    });
+  } catch (err) {
+    console.error("Error fetching students:", err);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching students",
+      error: err.message
+    });
+  }
+};
+
+export const getStudentAttendance = async (req, res) => {
+  try {
+    const studentId = req.student._id;
+
+    const { year, month } = req.query;
+
+    // Create initial query object with student ID
+    let queryObj = {  studentId };
+    console.log(queryObj)
+    // If year and month are provided, add them to the query object
+    if (year && month) {
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0);
+      queryObj.date = { $gte: startDate, $lte: endDate };
+    }
+
+    // Find attendance records based on the query object
+    const attendanceRecords = await AttendanceModel.find(queryObj);
+    console.log(attendanceRecords)
+    // Check if any attendance records are found
+    if (!attendanceRecords || attendanceRecords.length === 0) {
+      return res.status(404).json({ success: false, message: "No attendance records found for this student" });
+    }
+
+    // Return the fetched attendance records
+    res.status(200).json({ success: true, attendance: attendanceRecords });
+  } catch (error) {
+    console.error("Error fetching student attendance:", error);
+    res.status(500).json({ success: false, message: "Internal server error", error: error.message });
+  }
+};
+
+// export const getStudentAttendance = async (req, res) => {
 //   try {
-//     const studentId = req.params.studentId;
-//     const attendance = await attendanceModel
-//       .find({ student: studentId })
-//       .sort({ date: "desc" });
-
-//     const presentCount = attendance.filter(
-//       (entry) => entry.status === "Present"
-//     ).length;
-
+//     const studentId = req.student._id;
+//     const { month, year } = req.query;
+//
+//     // Find attendance record for the student
+//     const attendanceRecord = await AttendanceModel.findOne({ studentId });
+//     if (!attendanceRecord) {
+//       return res.status(404).json({ message: "Attendance record not found for the student" });
+//     }
+//
+//     // Filter attendance entries based on selected month and year
+//     const filteredAttendance = attendanceRecord.filter(entry =>
+//         entry.month === parseInt(month) && entry.year === parseInt(year)
+//     );
+//
+//     // Calculate total attendance and total present entries
+//     const totalAttendance = filteredAttendance.length;
+//     const totalPresent = filteredAttendance.reduce((total, entry) =>
+//         entry.status === "Present" ? total + 1 : total, 0);
+//
 //     res.status(200).json({
-//       count: attendance.length,
-//       presentCount,
-//       studentId,
-//       attendance,
+//       totalAttendance,
+//       totalPresent,
+//       attendance: filteredAttendance
 //     });
 //   } catch (error) {
 //     res.status(500).json({ error: error.message });

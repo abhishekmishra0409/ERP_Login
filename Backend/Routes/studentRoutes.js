@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  forgotPasswordToken,
+  forgotPasswordToken, getAllStudents, getStudentAttendance,
   loginController,
   logoutController,
   registerController,
@@ -10,7 +10,6 @@ import {
 
 } from "../Controllers/studentControllers.js";
 import {authMiddleware, isAdmin} from "../Middlewares/authMiddleware.js";
-import { viewAttendance } from "../Controllers/attendanceController.js";
 
 const router = express.Router();
 
@@ -20,9 +19,10 @@ router.post("/forgot-password-token", forgotPasswordToken);
 router.post("/login", loginController);
 router.put("/edit", authMiddleware, updateStudent);
 router.get("/profile", authMiddleware, viewProfileController);
+router.get("/", getAllStudents);
 router.put("/password", authMiddleware, updatePassword);
 router.put("/reset-password/:token", resetPassword);
 router.get("/logout", logoutController);
-router.get("/view/:studentId", viewAttendance);
+router.get("/attendance",authMiddleware ,getStudentAttendance);
 
 export default router;

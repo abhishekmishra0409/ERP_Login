@@ -1,107 +1,40 @@
-import attendanceModel from "../Models/attendanceModel.js";
-
-// export const uploadAttendance = async (req, res) => {
-//   try {
-//     const { studentId, date, status } = req.body;
-//
-//     let existingAttendance = await attendanceModel.findOne({
-//       student: studentId,
-//       date,
-//     });
-//     if (existingAttendance) {
-//
-//       existingAttendance.status = status;
-//       await existingAttendance.save();
-//       res.status(200).json({ message: "Attendance updated successfully" });
-//     } else {
-//
-//       const attendance = new attendanceModel({
-//         student: studentId,
-//         date,
-//         status,
-//       });
-//       await attendance.save();
-//       res
-//         .status(201)
-//         .json({ message: "Attendance uploaded successfully", attendance });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
+import AttendanceModel from "../models/attendanceModel.js";
 
 export const uploadAttendance = async (req, res) => {
   try {
-    const { studentId, date, status } = req.body;
-    //find
-    let attendanceRecord = await attendanceModel.findOne({
-      student: studentId,
-    });
+    // Extract data from request body
+    const { batch, year, month, day, attendance } = req.body;
 
-    if (!attendanceRecord) {
-      attendanceRecord = new attendanceModel({
-        student: studentId,
-        attendance: [],
-      });
+    // Validate input data
+    if (!batch || !year || !month || !day || !attendance || !Array.isArray(attendance)) {
+      return res.status(400).json({ success: false, message: "Invalid attendance data" });
     }
 
-    //  if attendance for this date already exists
-    const existingAttendance = attendanceRecord.attendance.find(
-      (item) => item.date.toDateString() === new Date(date).toDateString()
-    );
-
-    if (existingAttendance) {
-      // update the status
-      existingAttendance.status = status;
-    } else {
-      attendanceRecord.attendance.push({ date, status });
+    // Check if attendance data is empty
+    if (attendance.length === 0) {
+      return res.status(400).json({ success: false, message: "Attendance data is empty" });
     }
 
-    await attendanceRecord.save();
-    res
-      .status(200)
-      .json({ message: "Attendance updated successfully", attendanceRecord });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    // Convert year, month, and day to a date string
+    const date = new Date(year, month-1, day+1).toISOString();
 
-// View attendance
-export const viewAttendance = async (req, res) => {
-  try {
-    const studentId = req.params.studentId;
-    const attendanceRecord = await attendanceModel.findOne({
-      student: studentId,
-    });
+    // Update attendance records for each student
+    const attendanceRecords = await Promise.all(attendance.map(async (record) => {
+      const { studentId, status } = record;
 
-    if (!attendanceRecord) {
-      return res.status(404).json({ message: "Attendance record not found" });
-    }
+      // Find or create attendance record for the student on the specified date
+      let attendanceRecord = await AttendanceModel.findOneAndUpdate(
+          { studentId, date },
+          { studentId, date, status },
+          { upsert: true, new: true }
+      );
 
-    //  total attendance
-    const totalAttendanceCount = attendanceRecord.attendance.length;
-
-    // Calculate Present
-    let presentAttendanceCount = 0;
-
-    for (const entry of attendanceRecord.attendance) {
-      if (entry.status === "Present") {
-        presentAttendanceCount++;
-      }
-    }
-
-    const attendance = attendanceRecord.attendance.map((item) => ({
-      date: item.date,
-      status: item.status,
+      return attendanceRecord;
     }));
 
-    res.status(200).json({
-      studentId,
-      totalAttendanceCount,
-      presentAttendanceCount,
-      attendance,
-    });
+    res.status(200).json({ success: true, message: "Attendance uploaded successfully", attendance: attendanceRecords });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error uploading attendance:", error);
+    res.status(500).json({ success: false, message: "Internal server error", error: error.message });
   }
 };
