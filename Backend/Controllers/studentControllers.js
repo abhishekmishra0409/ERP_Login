@@ -334,62 +334,36 @@ export const getAllStudents = async (req, res) => {
 export const getStudentAttendance = async (req, res) => {
   try {
     const studentId = req.student._id;
+    const {  month, year } = req.query;
 
-    const { year, month } = req.query;
+    // Find attendance record for the student
+    const attendanceRecord = await AttendanceModel.findOne({ studentId });
+    if (!attendanceRecord) {
+      return res
+          .status(404)
+          .json({ message: "Attendance record not found for the student" });
+    }
 
-    // Create initial query object with student ID
-    let queryObj = {  studentId };
-    console.log(queryObj)
-    // If year and month are provided, add them to the query object
+    // Filter attendance records based on selected month and year
+    let filteredAttendance = attendanceRecord.attendance;
     if (year && month) {
-      const startDate = new Date(year, month - 1, 1);
-      const endDate = new Date(year, month, 0);
-      queryObj.date = { $gte: startDate, $lte: endDate };
+      filteredAttendance = attendanceRecord.attendance.filter(
+          (entry) => entry.month === parseInt(month) && entry.year === parseInt(year)
+      );
     }
-
-    // Find attendance records based on the query object
-    const attendanceRecords = await AttendanceModel.find(queryObj);
-    console.log(attendanceRecords)
-    // Check if any attendance records are found
-    if (!attendanceRecords || attendanceRecords.length === 0) {
-      return res.status(404).json({ success: false, message: "No attendance records found for this student" });
+    let totalPresent = 0;
+    for (const entry of filteredAttendance) {
+      if (entry.status === "Present") {
+        totalPresent++;
+      }
     }
-
-    // Return the fetched attendance records
-    res.status(200).json({ success: true, attendance: attendanceRecords });
+    res.status(200).json({
+      totalAttendace: filteredAttendance.length,
+      totalPresent,
+      attendance: filteredAttendance,
+    });
   } catch (error) {
-    console.error("Error fetching student attendance:", error);
-    res.status(500).json({ success: false, message: "Internal server error", error: error.message });
+    res.status(500).json({ error: error.message });
   }
-};
 
-// export const getStudentAttendance = async (req, res) => {
-//   try {
-//     const studentId = req.student._id;
-//     const { month, year } = req.query;
-//
-//     // Find attendance record for the student
-//     const attendanceRecord = await AttendanceModel.findOne({ studentId });
-//     if (!attendanceRecord) {
-//       return res.status(404).json({ message: "Attendance record not found for the student" });
-//     }
-//
-//     // Filter attendance entries based on selected month and year
-//     const filteredAttendance = attendanceRecord.filter(entry =>
-//         entry.month === parseInt(month) && entry.year === parseInt(year)
-//     );
-//
-//     // Calculate total attendance and total present entries
-//     const totalAttendance = filteredAttendance.length;
-//     const totalPresent = filteredAttendance.reduce((total, entry) =>
-//         entry.status === "Present" ? total + 1 : total, 0);
-//
-//     res.status(200).json({
-//       totalAttendance,
-//       totalPresent,
-//       attendance: filteredAttendance
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
+};

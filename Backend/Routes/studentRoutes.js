@@ -9,7 +9,7 @@ import {
   updateStudent, viewProfileController,
 
 } from "../Controllers/studentControllers.js";
-import {authMiddleware, isAdmin} from "../Middlewares/authMiddleware.js";
+import {authMiddleware, isAdmin, isTeacher} from "../Middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.post("/forgot-password-token", forgotPasswordToken);
 router.post("/login", loginController);
 router.put("/edit", authMiddleware, updateStudent);
 router.get("/profile", authMiddleware, viewProfileController);
-router.get("/", getAllStudents);
+router.get("/",isTeacher, getAllStudents);
 router.put("/password", authMiddleware, updatePassword);
 router.put("/reset-password/:token", resetPassword);
 router.get("/logout", logoutController);
