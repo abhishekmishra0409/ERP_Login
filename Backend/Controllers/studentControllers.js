@@ -4,7 +4,7 @@ import {
   createPasswordResetToken,
 } from "../Helper/hashFunction.js";
 import studentModel from "../Models/studentModel.js";
-import generateRefreshToken from "../Middlewares/refreshToken.js";
+import generateRefreshToken from "../Helper/JwtToken.js";
 import sendEmail from "../Helper/EmailSend.js";
 // import attendanceModel from "../Models/attendanceModel.js";
 
@@ -23,19 +23,33 @@ export const registerController = async (req, res) => {
     }
 
     // Register student
-    const hashedPassword = await hashPassword(password);
     const student = await studentModel.create({
       name,
       email,
-      password: hashedPassword,
+      enrollment ,
       batch,
     });
+    const password = student.password;
+
+    const hashedPassword = await hashPassword(password);
+
+    await studentModel.findByIdAndUpdate(
+        student._id,
+        { password: hashedPassword },
+        { new: true }
+    );
 
     // Respond with success message
     res.status(200).send({
       success: true,
-      message: "Student registered successfully by admin.",
-      student,
+      message: "Student registered successfully.",
+      user: {
+        name: student.name,
+        email: student.email,
+        batch: student.batch,
+        enrollment:student.enrollment,
+        password: hashedPassword,
+      },
     });
   } catch (error) {
     console.error("Error in registration:", error);
@@ -95,6 +109,7 @@ export const loginController = async (req, res) => {
         name: student?.name,
         email: student?.email,
         batch: student?.batch,
+        enrollment: student?.enrollment
       },
     });
   } catch (error) {
@@ -103,8 +118,28 @@ export const loginController = async (req, res) => {
   }
 };
 
-// Handle refresh token - Removed the refresh token logic
+export const viewProfileController = async (req, res) => {
+  try {
+    // Get student ID from the request object
+    const studentId = req.student._id;
 
+    // Find the student by ID
+    const student = await studentModel.findById(studentId);
+
+    // If student not found, return 404 error
+    if (!student) {
+      return res.status(404).json({ success: false, message: "Student not found" });
+    }
+
+    // Respond with student details
+    res.status(200).json({ success: true, student });
+  } catch (error) {
+    console.error("Error viewing student profile:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// Handle refresh token
 export const logoutController = async (req, res) => {
   const cookie = req.cookies;
 
@@ -127,7 +162,7 @@ export const logoutController = async (req, res) => {
         httpOnly: true,
         secure: true,
       });
-      return res.sendStatus(204);
+      return res.status(204).json({ success: true, message: "Logout Successfully" });
     }
 
     // Update user document to remove the refresh token
@@ -138,12 +173,13 @@ export const logoutController = async (req, res) => {
       httpOnly: true,
       secure: true,
     });
-    res.status(204).json({ success: true, message: "Logout Successfully" });
+    return res.status(204).json({ success: true, message: "Logout Successfully" });
   } catch (error) {
     console.error("Error logging out:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
 
 export const updateStudent = async (req, res) => {
   const { _id } = req.student;

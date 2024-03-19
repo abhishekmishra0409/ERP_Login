@@ -1,6 +1,6 @@
 import adminModel from "../Models/adminModel.js";
 import { hashPassword, comparePassword } from "../Helper/hashFunction.js";
-import refreshToken from "../Middlewares/refreshToken.js";
+import refreshToken from "../Helper/JwtToken.js";
 
 export const registerAdminController = async (req, res) => {
     try {

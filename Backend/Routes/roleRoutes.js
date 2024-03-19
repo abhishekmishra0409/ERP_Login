@@ -6,8 +6,7 @@ import {
 } from "../Middlewares/authMiddleware.js";
 import {
   createTeacherController,
-  teacherTestController,
-  teacherloginController,
+  teacherloginController, teacherTestController,
 } from "../Controllers/teacherControllers.js";
 
 import { uploadAttendance } from "../Controllers/attendanceController.js";
@@ -22,7 +21,7 @@ router.post("/teacher-login", teacherloginController);
 router.get(
   "/teacher-test",
   isTeacher,
-  teacherTestController
+    teacherTestController
 );
 
 router.post("/upload",isTeacher, uploadAttendance);

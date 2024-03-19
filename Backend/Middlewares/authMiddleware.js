@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import StudentModel from "../Models/studentModel.js";
 import roleModel from "../Models/roleModel.js";
+import adminModel from "../Models/adminModel.js";
 
 export const authMiddleware = async (req, res, next) => {
   try {
@@ -40,9 +41,10 @@ export const authMiddleware = async (req, res, next) => {
 };
 
 // Admin access
-export const isAdmin = (req, res, next) => {
+export const isAdmin = async (req, res, next) => {
   // Get the JWT token from the request headers or cookies
-  const token = req.headers.authorization || req.cookies.adminToken;
+  const token = req.headers.authorization?.split(" ")[1] || req.cookies.refreshToken;
+  // console.log(token)
 
   // Check if token is present
   if (!token) {
@@ -52,19 +54,19 @@ export const isAdmin = (req, res, next) => {
   try {
     // Verify the token
     const decoded = jwt.verify(token, "adminToken");
-
+    const admin = await adminModel.findById(decoded?.id);
     // Check if decoded token includes admin role
-    if (decoded.role !== 'admin') {
+    if (admin.role !== 'Admin') {
       return res.status(403).send({ message: "Not authorized" });
     }
 
     // Pass admin data to the request object
-    req.admin = decoded;
+    req.admin = admin;
 
     // Move to the next middleware/controller
     next();
   } catch (error) {
-    console.error("Error verifying admin token:", error);
+    // console.error("Error verifying admin token:", error);
     return res.status(401).send({ message: "Invalid token" });
   }
 };
@@ -76,9 +78,8 @@ export const isTeacher = async (req, res, next) => {
 
     // Verify token
     const decoded = jwt.verify(token, 'teacherToken');
-
     // Check if user is a teacher
-    const user = await roleModel.findById(decoded._id);
+    const user = await roleModel.findById(decoded.id);
     if (!user || user.role !== 'teacher') {
       return res.status(401).send({
         success: false,

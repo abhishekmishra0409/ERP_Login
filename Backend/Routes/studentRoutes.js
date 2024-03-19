@@ -6,7 +6,7 @@ import {
   registerController,
   resetPassword,
   updatePassword,
-  updateStudent,
+  updateStudent, viewProfileController,
 
 } from "../Controllers/studentControllers.js";
 import {authMiddleware, isAdmin} from "../Middlewares/authMiddleware.js";
@@ -19,10 +19,10 @@ router.post("/register",isAdmin, registerController);
 router.post("/forgot-password-token", forgotPasswordToken);
 router.post("/login", loginController);
 router.put("/edit", authMiddleware, updateStudent);
+router.get("/profile", authMiddleware, viewProfileController);
 router.put("/password", authMiddleware, updatePassword);
 router.put("/reset-password/:token", resetPassword);
 router.get("/logout", logoutController);
-
 router.get("/view/:studentId", viewAttendance);
 
 export default router;

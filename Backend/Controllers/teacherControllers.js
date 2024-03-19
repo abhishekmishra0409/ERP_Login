@@ -1,6 +1,6 @@
 import { comparePassword, hashPassword } from "../Helper/hashFunction.js";
 import roleModel from "../Models/roleModel.js";
-import refreshToken from "../Middlewares/refreshToken.js";
+import refreshToken from "../Helper/JwtToken.js";
 
 export const createTeacherController = async (req, res) => {
   try {
