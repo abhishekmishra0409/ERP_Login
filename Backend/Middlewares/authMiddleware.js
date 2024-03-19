@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import StudentModel from "../Models/studentModel.js";
-import TeacherModel from "../Models/teacherModel.js";
+import roleModel from "../Models/roleModel.js";
 
 export const authMiddleware = async (req, res, next) => {
   try {
@@ -78,7 +78,7 @@ export const isTeacher = async (req, res, next) => {
     const decoded = jwt.verify(token, 'teacherToken');
 
     // Check if user is a teacher
-    const user = await TeacherModel.findById(decoded._id);
+    const user = await roleModel.findById(decoded._id);
     if (!user || user.role !== 'teacher') {
       return res.status(401).send({
         success: false,

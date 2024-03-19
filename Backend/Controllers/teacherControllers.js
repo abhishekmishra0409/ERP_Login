@@ -1,6 +1,6 @@
 import { comparePassword, hashPassword } from "../Helper/hashFunction.js";
-import teacherModel from "../Models/teacherModel.js";
-import JWT from "jsonwebtoken";
+import roleModel from "../Models/roleModel.js";
+import refreshToken from "../Middlewares/refreshToken.js";
 
 export const createTeacherController = async (req, res) => {
   try {
@@ -12,7 +12,7 @@ export const createTeacherController = async (req, res) => {
     }
 
     // Check if teacher already exists
-    const existingTeacher = await teacherModel.findOne({ email });
+    const existingTeacher = await roleModel.findOne({ email });
     if (existingTeacher) {
       return res.status(409).send({
         success: false,
@@ -24,7 +24,7 @@ export const createTeacherController = async (req, res) => {
     const hashedPassword = await hashPassword(password);
 
     // Create teacher
-    const user = await new teacherModel({
+    const user = await new roleModel({
       name,
       email,
       password: hashedPassword,
@@ -59,7 +59,7 @@ export const teacherloginController = async (req, res) => {
     }
 
     // Check if teacher exists
-    const user = await teacherModel.findOne({ email });
+    const user = await roleModel.findOne({ email });
     if (!user) {
       return res.status(404).send({
         success: false,
@@ -77,9 +77,7 @@ export const teacherloginController = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = JWT.sign({ _id: user._id }, "teacherToken", {
-      expiresIn: "7d",
-    });
+    const token = await refreshToken(user._id,"teacherToken")
 
     res.status(200).send({
       success: true,
@@ -88,7 +86,7 @@ export const teacherloginController = async (req, res) => {
         name: user?.name,
         email: user?.email,
       },
-      token,
+      token:token,
     });
   } catch (error) {
     console.error("Error in teacher login:", error);

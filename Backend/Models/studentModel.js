@@ -10,10 +10,14 @@ const studentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    password: {
-      type: String,
-      required: true,
-    },
+      enrollment:{
+        type:String,
+          required:true
+      },
+      password: {
+          type: String,
+          default: "svgi@svce",
+      },
     batch: {
       type: String,
       required: true,
@@ -25,15 +29,9 @@ const studentSchema = new mongoose.Schema(
           type:String,
           default:"student"
       },
-      isEmailVerified:{
-        type:Boolean,
-        default: false
-      },
       passwordChangedAt : Date,
       passwordResetToken : String,
       passwordResetExpires:Date,
-      emailVerificationToken : String,
-      emailVerificationExpires : Date,
   },
   { timestamps: true },
 

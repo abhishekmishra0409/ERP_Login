@@ -1,6 +1,6 @@
 import adminModel from "../Models/adminModel.js";
 import { hashPassword, comparePassword } from "../Helper/hashFunction.js";
-import generateToken from "../Middlewares/jwtToken.js";
+import refreshToken from "../Middlewares/refreshToken.js";
 
 export const registerAdminController = async (req, res) => {
     try {
@@ -64,18 +64,18 @@ export const loginAdminController = async (req, res) => {
         }
 
         // Generate access token
-        const accessToken = generateToken(admin._id);
+        const token =  await refreshToken(admin._id,"adminToken")
 
         // Respond with admin details and access token
         res.json({
             _id: admin._id,
             success: true,
             message: "Login successful",
-            token: accessToken,
+            token: token,
             admin: {
                 name: admin.name,
                 email: admin.email,
-                token: accessToken,
+                token: token,
             },
         });
     } catch (error) {

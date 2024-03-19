@@ -10,14 +10,14 @@ import sendEmail from "../Helper/EmailSend.js";
 
 export const registerController = async (req, res) => {
   try {
-    const { name, email, password, batch } = req.body;
+    const { name, email, batch,enrollment } = req.body;
     // Validations
-    if (!name || !email || !password || !batch) {
+    if (!name || !email || !enrollment || !batch) {
       return res.status(400).send({ message: "All fields are required" });
     }
 
     // Check if student already exists
-    const existingStudent = await studentModel.findOne({ email: email });
+    const existingStudent = await studentModel.findOne({ email: email ,enrollment: enrollment });
     if (existingStudent) {
       return res.status(409).send({ message: "Student already exists" });
     }
@@ -70,7 +70,7 @@ export const loginController = async (req, res) => {
     }
 
     // Generate refresh token
-    const refreshToken = await generateRefreshToken(student._id);
+    const refreshToken = await generateRefreshToken(student._id , "0822IT21");
 
     // Update refresh token in the database
     await studentModel.findByIdAndUpdate(
