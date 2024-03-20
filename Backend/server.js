@@ -6,16 +6,25 @@ import roleRoutes from "./Routes/roleRoutes.js";
 import adminRoutes from "./Routes/adminRoute.js";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import cloudinaryConfig from "./Database/cloudinaryConfig.js";
+import fileUpload from "express-fileupload";
+
 
 const app = express();
 app.use(cookieParser());
 
+//configs
 connectDB();
+cloudinaryConfig();
 
 //middleware
 app.use(express.json());
 app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
 app.use(morgan("dev"));
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: '/tmp/'
+}));
 
 //routes
 app.use("/api/admin", adminRoutes);

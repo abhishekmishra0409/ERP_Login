@@ -334,14 +334,12 @@ export const getAllStudents = async (req, res) => {
 export const getStudentAttendance = async (req, res) => {
   try {
     const studentId = req.student._id;
-    const {  month, year } = req.query;
+    const { month, year } = req.query;
 
     // Find attendance record for the student
     const attendanceRecord = await AttendanceModel.findOne({ studentId });
     if (!attendanceRecord) {
-      return res
-          .status(404)
-          .json({ message: "Attendance record not found for the student" });
+      return res.status(404).json({ message: "Attendance record not found for the student" });
     }
 
     // Filter attendance records based on selected month and year
@@ -351,19 +349,56 @@ export const getStudentAttendance = async (req, res) => {
           (entry) => entry.month === parseInt(month) && entry.year === parseInt(year)
       );
     }
+
+    // Sort attendance records by date (year, month, day)
+    filteredAttendance.sort((a, b) => {
+      const dateA = new Date(a.year, a.month - 1, a.day);
+      const dateB = new Date(b.year, b.month - 1, b.day);
+      return dateA - dateB;
+    });
+
     let totalPresent = 0;
     for (const entry of filteredAttendance) {
       if (entry.status === "Present") {
         totalPresent++;
       }
     }
+
     res.status(200).json({
-      totalAttendace: filteredAttendance.length,
+      totalAttendance: filteredAttendance.length,
       totalPresent,
       attendance: filteredAttendance,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
-
 };
+
+
+
+
+// import studentModel from "../Models/studentModel.js";
+import timetable from "../Models/timeTableModel.js"; 
+export const getTimeTable = async(req,res) =>{
+  try{
+    const { department, sem } = req.query;
+   if( !department || !sem){
+      return res.status(400).json({
+      success: false,
+      message:"Complete all the fields "
+     });
+   }
+
+console.log(department,sem);
+   
+    const getAllTimeTable = await timetable.findOne({department,sem})
+    // console.log(getAllTimeTable.length)
+    // console.log(getAllTimeTable.timeTableURL);
+    return res.status(200).json({
+      success: true,
+      data: getAllTimeTable
+    });
+  }catch(error){
+    console.log(error);
+  }
+}

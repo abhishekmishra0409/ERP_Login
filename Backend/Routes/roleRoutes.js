@@ -6,7 +6,7 @@ import {
 } from "../Middlewares/authMiddleware.js";
 import {
   createTeacherController,
-  teacherloginController, teacherTestController,
+  teacherloginController, teacherTestController, uploadTimeTable, deleteTimetable
 } from "../Controllers/teacherControllers.js";
 
 import { uploadAttendance } from "../Controllers/attendanceController.js";
@@ -25,5 +25,9 @@ router.get(
 );
 
 router.post("/upload-attendance",isTeacher, uploadAttendance);
+
+// timetable routes
+router.post("/upload-timetable",isTeacher, uploadTimeTable);
+router.delete("/delete-timetable",isTeacher, deleteTimetable);
 
 export default router;

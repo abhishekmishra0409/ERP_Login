@@ -104,3 +104,108 @@ export const teacherTestController = (req, res) => {
 };
 
 
+import {v2 as cloudinary} from "cloudinary"
+import timetable from "../Models/timeTableModel.js";
+
+async function uploading(file, folder){
+  const options={
+    folder  }
+  
+  return await cloudinary.uploader.upload(file.tempFilePath, options);
+}
+
+// upload time table contorller
+export const uploadTimeTable = async(req,res)=>{
+  try{
+    const imgFile =req.files.imgFile;
+    const {department, sem} = req.body;
+
+    // console.log(imgFile)
+    if(!imgFile){
+      return  res.status(400).json({
+        success:false,
+        message:"Image file is not found"
+      })
+    }
+  
+    const supportedFiles = ["jpeg", "jpg", "png"];
+    const fileType = imgFile.name.split(".")[1];
+    // console.log(fileType);
+
+    if(!supportedFiles.includes(fileType)){
+      return res.status(400).json({
+        success:false,
+        message:"File not supported"
+    })
+    }
+
+
+  const uploadImg = await uploading(imgFile, "TimeTable");
+  // console.log(uploadImg);
+    if(!uploadImg){
+      res.status(400).json({
+        success:false,
+        msg:"Error while uploading try again",
+        error: error
+    })
+    }
+    
+    const sendDetail = await new timetable({
+      department,
+      sem,
+      timeTableURL:uploadImg.secure_url, 
+      cloudinary_name:uploadImg.public_id}).save();
+  
+// console.log(sendDetail)
+
+    
+    return res.status(200).json({
+      success:true,
+      msg:"File uploaded successfully",
+      data: sendDetail
+  })
+
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({
+      success:false,
+      msg:"Error while uploading",
+      error: error
+  })
+  }
+}
+
+
+// delete time table 
+export const deleteTimetable = async(req,res) =>{
+  try{
+    const {department, sem} = req.query;
+    if(!department || !sem){
+       return res.status(400).json({
+        success:false,
+        msg:"Fill all the fields"
+    });
+  }
+  const findAndDestroy = await timetable.findOne({department,sem});
+  const del = await cloudinary.uploader.destroy(findAndDestroy.cloudinary_name);
+  if(!del){
+    return res.status(400).json({
+      success:false,
+      msg:"not deleted from cloud"
+  });
+  }
+  const deleteTt = await timetable.deleteOne({department, sem});
+  return res.status(200).json({
+    success:true,
+    msg:"Deleted successfully",
+    data:deleteTt
+});
+
+  }catch(error){
+    return res.status(400).json({
+      success:false,
+      msg:"Fill all the fields",
+      error:error
+  });
+  }
+}

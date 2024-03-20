@@ -1,53 +1,30 @@
-import attendanceModel from "../models/attendanceModel.js";
+import Attendance from "../models/attendanceModel.js";
 
 export const uploadAttendance = async (req, res) => {
   try {
-    const { studentId, year, month, day, status } = req.body;
+    const { attendance,year, month, day, } = req.body;
 
-    let attendanceRecord = await attendanceModel.findOne({ studentId });
+    // Iterate over each attendance entry and update or add to the attendance records
+    for (const { studentId,  status } of attendance) {
+      let attendanceRecord = await Attendance.findOne({ studentId });
 
-    // If no create a new one
-    if (!attendanceRecord) {
-      attendanceRecord = new attendanceModel({
-        studentId,
-        attendance: [{ year, month, day, status }],
-      });
-    } else {
+      // Find the attendance entry for the specified day
       const existingAttendanceIndex = attendanceRecord.attendance.findIndex(
-          (entry) =>
-              entry.year.toString() === year &&
-              entry.month.toString() === month &&
-              entry.day.toString() === day
+          entry => entry.year === year && entry.month === month && entry.day === day
       );
 
+      // If attendance entry for the day exists, update the status
       if (existingAttendanceIndex !== -1) {
-        // If attendance already exists for the same day, month, and year
-        const existingStatus =
-            attendanceRecord.attendance[existingAttendanceIndex].status;
-
-        //  if new status is different from the existing status
-        if (existingStatus !== status) {
-          // Update the status
-          attendanceRecord.attendance[existingAttendanceIndex].status = status;
-        } else {
-          // If the new status is the same as the existing status, do nothing
-          return res.status(200).json({
-            message: "Attendance already exists with the same status",
-            existingStatus,
-          });
-        }
+        attendanceRecord.attendance[existingAttendanceIndex].status = status;
       } else {
-        // if attendance doesn't exist
+        // Otherwise, add a new attendance entry for the day
         attendanceRecord.attendance.push({ year, month, day, status });
       }
+
+      await attendanceRecord.save();
     }
 
-    // Save
-    await attendanceRecord.save();
-
-    res
-        .status(200)
-        .json({ message: "Attendance updated successfully", attendanceRecord });
+    res.status(200).json({ message: "Attendance updated successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
