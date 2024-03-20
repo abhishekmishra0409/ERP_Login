@@ -7,9 +7,10 @@ import {
 import {
   createTeacherController,
   teacherloginController, teacherTestController, uploadTimeTable, deleteTimetable
-} from "../Controllers/teacherControllers.js";
+} from "../Controllers/roleControllers.js";
 
 import { uploadAttendance } from "../Controllers/attendanceController.js";
+import {sendMessage} from "../Controllers/messageController.js";
 
 const router = express.Router();
 
@@ -29,5 +30,6 @@ router.post("/upload-attendance",isTeacher, uploadAttendance);
 // timetable routes
 router.post("/upload-timetable",isTeacher, uploadTimeTable);
 router.delete("/delete-timetable",isTeacher, deleteTimetable);
+router.post("/send-message",isTeacher,sendMessage)
 
 export default router;

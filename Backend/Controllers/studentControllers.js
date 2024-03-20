@@ -10,14 +10,14 @@ import AttendanceModel from "../models/attendanceModel.js";
 
 export const registerController = async (req, res) => {
   try {
-    const { name, email, batch,enrollment } = req.body;
+    const { email, batch,enrollment,department } = req.body;
     // Validations
-    if (!name || !email || !enrollment || !batch) {
+    if (!email || !enrollment || !batch ||!department) {
       return res.status(400).send({ message: "All fields are required" });
     }
 
     // Check if student already exists
-    const existingStudent = await studentModel.findOne({   enrollment: enrollment  });
+    const existingStudent = await studentModel.findOne({ $or: [{ email: email }, { enrollment: enrollment }] });
 
     if (existingStudent) {
       return res.status(409).send({ message: "Student already exists" });
@@ -25,10 +25,10 @@ export const registerController = async (req, res) => {
 
     // Register student
     const student = await studentModel.create({
-      name,
       email,
       enrollment ,
       batch,
+      department
     });
     const password = student.password;
 
@@ -45,11 +45,11 @@ export const registerController = async (req, res) => {
       success: true,
       message: "Student registered successfully.",
       user: {
-        name: student.name,
         email: student.email,
         batch: student.batch,
         enrollment:student.enrollment,
         password: hashedPassword,
+        department:student.department
       },
     });
   } catch (error) {

@@ -176,7 +176,7 @@ export const uploadTimeTable = async(req,res)=>{
 }
 
 
-// delete time table 
+// delete time Table
 export const deleteTimetable = async(req,res) =>{
   try{
     const {department, sem} = req.query;

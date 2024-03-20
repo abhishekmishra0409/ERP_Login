@@ -10,6 +10,7 @@ import {
 
 } from "../Controllers/studentControllers.js";
 import {authMiddleware, isAdmin, isTeacher} from "../Middlewares/authMiddleware.js";
+import {getMessage} from "../Controllers/messageController.js";
 
 const router = express.Router();
 
@@ -25,4 +26,5 @@ router.put("/reset-password/:token", resetPassword);
 router.get("/logout", logoutController);
 router.get("/attendance",authMiddleware ,getStudentAttendance);
 router.get("/get-timetable", getTimeTable);
+router.get("/get-message",authMiddleware, getMessage);
 export default router;

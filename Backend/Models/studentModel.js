@@ -4,7 +4,7 @@ const studentSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      default:""
     },
     email: {
       type: String,
@@ -17,6 +17,10 @@ const studentSchema = new mongoose.Schema(
       password: {
           type: String,
           default: "svgi@svce",
+      },
+      department:{
+        type:String,
+        required:true
       },
     batch: {
       type: String,
@@ -36,5 +40,17 @@ const studentSchema = new mongoose.Schema(
   { timestamps: true },
 
 );
+
+studentSchema.statics.fetchAllBatches = async function () {
+    try {
+        // Use aggregation to fetch all unique batch numbers
+        const batches = await this.distinct("batch");
+
+        return batches;
+    } catch (error) {
+        console.error("Error fetching all batches:", error);
+        throw error;
+    }
+};
 
 export default mongoose.model("Student", studentSchema);
