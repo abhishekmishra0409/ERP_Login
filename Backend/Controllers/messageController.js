@@ -62,6 +62,7 @@ export const getMessage = async (req, res) => {
 const deleteExpiredMessages = async () => {
     try {
         const thresholdDate = new Date();
+
         thresholdDate.setDate(thresholdDate.getDate() - 1);
 
         // Delete messages older than the threshold date
@@ -73,5 +74,4 @@ const deleteExpiredMessages = async () => {
     }
 };
 
-// Schedule the delete function to run daily at midnight
 cron.schedule("0 0 * * *", deleteExpiredMessages);
