@@ -3,16 +3,12 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
-  PlusOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Layout, Menu, Button, theme, message } from "antd";
-import { RiUserAddFill } from "react-icons/ri";
 import { FaSignOutAlt } from "react-icons/fa";
-import { PiStudentFill } from "react-icons/pi";
-import { GrUpdate } from "react-icons/gr";
 import { useDispatch } from "react-redux";
-import { logout } from "../features/auth/authSlice";
+import { studentLogout } from "../features/auth/authSlice";
 
 const { Header, Sider, Content } = Layout;
 
@@ -24,11 +20,11 @@ const LayoutD = () => {
   
 
   const handleSignOut = () => {
-    dispatch(logout())
+    dispatch(studentLogout())
       .unwrap()
       .then(() => {
-        sessionStorage.removeItem("userData");
-        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("refreshToken");
 
         navigate("/");
         message.success("Logout Successfully!");
@@ -39,8 +35,7 @@ const LayoutD = () => {
       });
   };
 
-  const user = JSON.parse(sessionStorage.getItem("userData"));
-  const parseUser = user.admin;
+  const user = JSON.parse(sessionStorage.getItem("user"));
 
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -51,28 +46,6 @@ const LayoutD = () => {
       key: "",
       icon: <UserOutlined className="fs-5" />,
       label: "Dashboard",
-    },
-    {
-      key: "student",
-      icon: <PiStudentFill className="fs-5" />,
-      label: "Student",
-      children: [
-        {
-          key: "create-student",
-          icon: <PlusOutlined className="fs-5" />,
-          label: "Create Student",
-        },
-        {
-          key: "update-student",
-          icon: <GrUpdate className="fs-5" />,
-          label: "Update Student",
-        },
-      ],
-    },
-    {
-      key: "create-teacher",
-      icon: <RiUserAddFill className="fs-5" />,
-      label: "Create Teacher",
     },
     {
       key: "signout",
@@ -125,10 +98,10 @@ const LayoutD = () => {
           <div className="align-items-center">
             <div className=" align-items-center">
               <div>
-                {parseUser ? (
+                {user ? (
                   <>
-                    <h5 className="mb-0">{parseUser.name}</h5>
-                    <p className="mb-0">{parseUser.email}</p>
+                    <h5 className="mb-0">{user.name}</h5>
+                    <p className="mb-0">{user.email}</p>
                   </>
                 ) : (
                   <p>User data not available</p>

@@ -16,7 +16,7 @@ const router = express.Router();
 
 //register
 router.post("/create",  isAdmin, createTeacherController);
-router.post("/teacher-login", teacherloginController);
+router.post("/login", teacherloginController);
 
 //test teacher Protected Route
 router.get(

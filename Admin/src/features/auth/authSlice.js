@@ -11,6 +11,7 @@ export const setUserFromSessionStorage = () => async (dispatch) => {
     console.error("Error setting user from session storage:", error);
   }
 };
+
 const initialState = {
   user: null,
   orders: [],
@@ -19,6 +20,7 @@ const initialState = {
   isSuccess: false,
   message: "",
 };
+
 export const login = createAsyncThunk(
     "auth/login",
     async (userData, thunkAPI) => {

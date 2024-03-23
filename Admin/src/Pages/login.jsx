@@ -1,6 +1,6 @@
 import { Button, Checkbox, Form, Input,message } from "antd";
-import { login } from "../features/auth/authSlice"; // Import the login action from your auth slice
-import { useDispatch } from "react-redux"; // Import useDispatch hook to dispatch actions
+import { login } from "../features/auth/authSlice"; 
+import { useDispatch } from "react-redux"; 
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -8,11 +8,10 @@ const Login = () => {
   const dispatch = useDispatch(); 
 
   const onFinish = (values) => {
-    // console.log("Success:", values);
+    
     dispatch(login(values)) 
       .unwrap() 
-      .then((userData) => {
-        console.log("User data:", userData);
+      .then(() => {
         message.success('Login successfully.');
         navigateTo("/admin");
       })

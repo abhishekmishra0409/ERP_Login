@@ -79,9 +79,15 @@ export const teacherloginController = async (req, res) => {
     // Generate JWT token
     const token = await refreshToken(user._id,"teacherToken")
 
+    res.cookie("refreshToken", token, {
+      httpOnly: true,
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    });
+
     res.status(200).send({
       success: true,
       message: "Login successful",
+      refreshToken: token,
       user: {
         name: user?.name,
         email: user?.email,

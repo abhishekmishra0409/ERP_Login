@@ -1,23 +1,26 @@
 import './App.css'
 import { Routes, Route } from "react-router-dom";
-import Register from './component/Register';
-import Login from './component/Login';
-import Student from './component/Student';
-import Teacher from './component/Teacher';
-import { Logout } from './component/Logout';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import Login from './pages/Login';
+import Student from './pages/Student';
+import Teacher from './pages/Teacher';
+import StudentLayout from "./component/StudentLayout"
 
 function App() {
 
+ 
   return (
     <>
     <Routes>
-      <Route path='/' element={<Register/>} />
-      <Route path='/student-dashboard' element={<Student/>} />
-      <Route path='/teacher-dashboard' element={<Teacher/>} />
-      <Route path='/login' element={<Login/>}  />
-      <Route path='/logout' element={<Logout/>}  />
-
-      {/* <Route path="/verify-email/:token" component={VerifyEmail} /> */}
+      <Route path='/' element={<Login/>} />
+      <Route path='/forgot-password' element={<ForgotPassword/>} />
+      <Route path='/reset-password/*' element={<ResetPassword/>} />
+      <Route path='/student' element={<StudentLayout/>}>
+      <Route  path='' element={<Student/>}/>
+      </Route>
+      
+      <Route path='/teacher' element={<Teacher/>} />
     </Routes>
     </>
   )
