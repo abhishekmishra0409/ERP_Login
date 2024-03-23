@@ -1,9 +1,8 @@
-import LayoutD from "../Components/layout"
 
 const Dashboard = () => {
   return (
     <div>
-      <LayoutD/>
+        dashboard
     </div>
   )
 }

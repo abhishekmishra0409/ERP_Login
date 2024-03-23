@@ -20,7 +20,7 @@ export const registerController = async (req, res) => {
     const existingStudent = await studentModel.findOne({ $or: [{ email: email }, { enrollment: enrollment }] });
 
     if (existingStudent) {
-      return res.status(409).send({ message: "Student already exists" });
+      return res.status(409).json({success: false, message: "Student already exists" });
     }
 
     // Register student
@@ -97,7 +97,7 @@ export const loginController = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
     });
 
     // Respond with student details and refresh token
@@ -328,6 +328,54 @@ export const getAllStudents = async (req, res) => {
       message: "Error fetching students",
       error: err.message
     });
+  }
+};
+
+export const getStudentByEnrollment = async (req, res) => {
+  try {
+    const { enrollment } = req.params;
+    const student = await studentModel.findOne({ enrollment });
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      student,
+    });
+  } catch (err) {
+    console.error('Error fetching student:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching student',
+      error: err.message,
+    });
+  }
+};
+
+export const updateStudentContoller = async (req, res) => {
+  const { id } = req.params;
+  const { name, email, department, batch } = req.body;
+
+  try {
+    const updatedStudent = await studentModel.findByIdAndUpdate(
+        id,
+        { name, email, department, batch },
+        { new: true } // Return the updated document
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ success: false, message: 'Student not found' });
+    }
+
+    res.status(200).json({ success: true, student: updatedStudent });
+  } catch (error) {
+    console.error('Error updating student:', error);
+    res.status(500).json({ success: false, message: 'Failed to update student data', error: error.message });
   }
 };
 

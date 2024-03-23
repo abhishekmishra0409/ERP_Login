@@ -6,7 +6,7 @@ import {
   registerController,
   resetPassword,
   updatePassword,
-  updateStudent, viewProfileController, getTimeTable
+  updateStudent, viewProfileController, getTimeTable, getStudentByEnrollment, updateStudentContoller
 
 } from "../Controllers/studentControllers.js";
 import {authMiddleware, isAdmin, isTeacher} from "../Middlewares/authMiddleware.js";
@@ -27,4 +27,7 @@ router.get("/logout", logoutController);
 router.get("/attendance",authMiddleware ,getStudentAttendance);
 router.get("/get-timetable", getTimeTable);
 router.get("/get-message",authMiddleware, getMessage);
+router.get('/:enrollment',getStudentByEnrollment)
+router.put('/:id',isAdmin,updateStudentContoller)
+
 export default router;
