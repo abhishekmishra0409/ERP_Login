@@ -112,6 +112,7 @@ export const teacherTestController = (req, res) => {
 
 import {v2 as cloudinary} from "cloudinary"
 import timetable from "../Models/timeTableModel.js";
+import adminModel from "../Models/adminModel.js";
 
 async function uploading(file, folder){
   const options={
@@ -215,3 +216,41 @@ export const deleteTimetable = async(req,res) =>{
   });
   }
 }
+
+export const logoutRoleController = async (req, res) => {
+  const cookie = req.cookies;
+
+  // Check if refresh token is present in cookies
+  if (!cookie?.refreshToken) {
+    return res
+        .status(400)
+        .send({ success: false, message: "No Refresh Token in Cookies" });
+  }
+
+  const refreshToken = cookie.refreshToken;
+
+  try {
+    // Find the admin by refreshToken
+    const role = await roleModel.findOne({ refreshToken });
+
+    // If admin doesn't exist, clear the cookie and send 204 status
+    if (!role) {
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+      });
+      return res.status(204).json({ success: true, message: "Teacher Logout Successful" });
+    }
+
+
+    // Clear the refresh token cookie and send 204 status
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+    });
+    return res.status(204).json({ success: true, message: "Teacher Logout Successful" });
+  } catch (error) {
+    console.error("Error logging out Teacher:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};

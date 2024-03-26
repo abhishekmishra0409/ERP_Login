@@ -17,8 +17,3 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   
   )
   
-  
- {/* <AuthProvider>
-     <TeacherAuthProvider> */}
-  //     </TeacherAuthProvider>
-  // // </AuthProvider>

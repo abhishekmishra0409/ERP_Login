@@ -74,7 +74,7 @@ export const isAdmin = async (req, res, next) => {
 export const isTeacher = async (req, res, next) => {
   try {
     // Extract token from Authorization header
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.headers.authorization.split(' ')[1] || req.cookies.refreshToken;
 
     // Verify token
     const decoded = jwt.verify(token, 'teacherToken');

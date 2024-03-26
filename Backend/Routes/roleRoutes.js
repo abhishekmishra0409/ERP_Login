@@ -6,7 +6,7 @@ import {
 } from "../Middlewares/authMiddleware.js";
 import {
   createTeacherController,
-  teacherloginController, teacherTestController, uploadTimeTable, deleteTimetable
+  teacherloginController, teacherTestController, uploadTimeTable, deleteTimetable, logoutRoleController
 } from "../Controllers/roleControllers.js";
 
 import { uploadAttendance } from "../Controllers/attendanceController.js";
@@ -31,5 +31,6 @@ router.post("/upload-attendance",isTeacher, uploadAttendance);
 router.post("/upload-timetable",isTeacher, uploadTimeTable);
 router.delete("/delete-timetable",isTeacher, deleteTimetable);
 router.post("/send-message",isTeacher,sendMessage)
+router.get("/logout",isTeacher,logoutRoleController)
 
 export default router;

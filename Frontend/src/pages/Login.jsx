@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Form, Input, Button, Checkbox, message, Radio } from 'antd';
+import { Form, Input, Button, message, Radio } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { studentLogin, teacherLogin } from '../features/auth/authSlice';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { studentProfile } from '../features/student/studentSlice';
+
 
 const Login = () => {
   const [userType, setUserType] = useState('student');
@@ -14,6 +16,8 @@ const Login = () => {
     try {
       if (userType === 'student') {
         await dispatch(studentLogin(values)).unwrap();
+        await dispatch(studentProfile());
+      
         navigateTo('/student');
       } else if (userType === 'teacher') {
         await dispatch(teacherLogin(values)).unwrap();
@@ -22,7 +26,7 @@ const Login = () => {
       message.success('Login successful!');
     } catch (error) {
       console.error('Login error:', error);
-      message.error('Failed to login.');
+      message.error('Wrong password');
     }
   };
 
@@ -63,6 +67,12 @@ const Login = () => {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
+          <Form.Item label="User Type">
+            <Radio.Group defaultValue={userType} onChange={(e) => setUserType(e.target.value)}>
+              <Radio.Button value="student">Student</Radio.Button>
+              <Radio.Button value="teacher">Teacher</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
             <label >Email</label>
           <Form.Item
             name="email"
@@ -88,22 +98,13 @@ const Login = () => {
           >
             <Input.Password prefix={<LockOutlined />} style={{ width: '150%' }} />
           </Form.Item>
-          <Form.Item label="User Type">
-            <Radio.Group defaultValue={userType} onChange={(e) => setUserType(e.target.value)}>
-              <Radio.Button value="student">Student</Radio.Button>
-              <Radio.Button value="teacher">Teacher</Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item
-            name="remember"
-            valuePropName="checked"
-            wrapperCol={{
-              offset: 0,
-              span: 16,
-            }}
-          >
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
+          
+          <div className="mb-3 text-end">
+            <Link to="forgot-password" className="">
+              Forgot Password?
+            </Link>
+          </div>
+          
           <Form.Item
             wrapperCol={{
               offset: 0,

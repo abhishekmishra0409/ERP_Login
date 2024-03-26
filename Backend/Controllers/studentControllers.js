@@ -180,14 +180,22 @@ export const logoutController = async (req, res) => {
   }
 };
 
+
 export const updateStudent = async (req, res) => {
   const { _id } = req.student;
-
+  const { address, city, gender, name, phone, dob, sem  } = req.body;
   try {
     const updatedStudent = await studentModel.findByIdAndUpdate(
-      _id,
-      { name: req.body.name },
-      { new: true }
+        _id,
+        { name :name,
+          address: address,
+          city:city,
+          gender:gender,
+          phone:phone,
+          dob:dob,
+          sem:sem
+        },
+        { new: true }
     );
     res.json({ message: "Update done ", data: updatedStudent });
   } catch (error) {
@@ -198,18 +206,21 @@ export const updateStudent = async (req, res) => {
 
 export const updatePassword = async (req, res) => {
   try {
+
     const { _id } = req.student;
     const { password } = req.body;
-    const hashedPassword = await hashPassword(password);
+
 
     if (!password) {
       return res.status(400).json({ message: "Password is required" });
     }
+    const hashedPassword = await hashPassword(password);
+
 
     const updatedStudent = await studentModel.findByIdAndUpdate(
-      _id,
-      { password: hashedPassword },
-      { new: true }
+        _id,
+        { password: hashedPassword },
+        { new: true }
     );
 
     res.json({ message: "Password changed successfully" });
@@ -218,6 +229,7 @@ export const updatePassword = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 // Forgot Password Token Controller
 export const forgotPasswordToken = async (req, res) => {

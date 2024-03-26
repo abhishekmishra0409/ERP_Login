@@ -37,7 +37,6 @@ const logout = async () => {
     const headers = {
       'Authorization': token,
       'Content-Type': 'application/json',
-      
     };
 
     const response = await fetch(`${base_url}admin/logout`, {

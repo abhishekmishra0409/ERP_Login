@@ -19,7 +19,7 @@ const login = async (user, userType) => {
     const response = await axios.post(loginEndpoint, user, {
       withCredentials: true,
     });
-console.log(response.data);
+// console.log(response.data);
     if (response.data) {
       axios.defaults.headers.common["Authorization"] = response.data.refreshToken;
 

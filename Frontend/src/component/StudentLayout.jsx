@@ -7,9 +7,15 @@ import {
 import { Outlet, useNavigate } from "react-router-dom";
 import { Layout, Menu, Button, theme, message } from "antd";
 import { FaSignOutAlt } from "react-icons/fa";
+import { RxUpdate } from "react-icons/rx";
+import { IoCalendarNumberOutline } from "react-icons/io5";
+import { PiChalkboardTeacherDuotone } from "react-icons/pi";
+import { MdOutlineClass } from "react-icons/md";
+import { MdOutlinePublishedWithChanges } from "react-icons/md";
+
+
 import { useDispatch } from "react-redux";
 import { studentLogout } from "../features/auth/authSlice";
-
 const { Header, Sider, Content } = Layout;
 
 const LayoutD = () => {
@@ -25,7 +31,8 @@ const LayoutD = () => {
       .then(() => {
         sessionStorage.removeItem("user");
         sessionStorage.removeItem("refreshToken");
-
+        sessionStorage.removeItem("userData")
+        sessionStorage.removeItem("imgUrl")
         navigate("/");
         message.success("Logout Successfully!");
       })
@@ -35,8 +42,9 @@ const LayoutD = () => {
       });
   };
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
 
+  const user = JSON.parse(sessionStorage.getItem("user"));
+// console.log(user);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -46,6 +54,31 @@ const LayoutD = () => {
       key: "",
       icon: <UserOutlined className="fs-5" />,
       label: "Dashboard",
+    },
+    {
+      key: "update",
+      icon: <RxUpdate className="fs-5"/>,
+      label: "Update Details",
+    },
+    {
+      key: "timetable",
+      icon: <IoCalendarNumberOutline className="fs-5" />,
+      label: "Time-Table",
+    },
+    {
+      key: "attendance",
+      icon: <PiChalkboardTeacherDuotone className="fs-5" />,
+      label: "Attendance",
+    },
+    {
+      key: "mst",
+      icon: <MdOutlineClass className="fs-5" />,
+      label: "MST Marks",
+    },
+    {
+      key: "changepassword",
+      icon: <MdOutlinePublishedWithChanges  className="fs-5" />,
+      label: "Update Password",
     },
     {
       key: "signout",
@@ -95,16 +128,15 @@ const LayoutD = () => {
               height: 64,
             }}
           />
-          <div className="align-items-center">
-            <div className=" align-items-center">
-              <div>
+          <div >
+            <div  style={{height:'100%', display:'flex', justifyContent:'center', alignItems:'center'}}>
+              <div >
                 {user ? (
                   <>
-                    <h5 className="mb-0">{user.name}</h5>
-                    <p className="mb-0">{user.email}</p>
+                    <h5 style={{height:'100%', fontSize:"17px"}}  className="mb-0">{user.name}</h5>         
                   </>
                 ) : (
-                  <p>User data not available</p>
+                  <h5 className="mb-0">{user.email}</h5>  
                 )}
               </div>
             </div>
@@ -119,6 +151,7 @@ const LayoutD = () => {
             borderRadius: borderRadiusLG,
           }}
         >
+        
           <Outlet />
         </Content>
       </Layout>
