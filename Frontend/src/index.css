@@ -1,5 +1,6 @@
 body{
     font-family: "Roboto",sans-serif;
+    scrollbar-width: none;
   }
   /* .trigger{
     padding: 0 24px;

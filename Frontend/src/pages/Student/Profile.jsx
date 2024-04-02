@@ -1,6 +1,8 @@
+import { useDispatch } from 'react-redux';
 import { Descriptions } from 'antd';
 
-function Student() {
+
+const Profile = () => {
     // const dispatch = useDispatch(); 
 
     let storedUserData = JSON.parse(sessionStorage.getItem('userData'));
@@ -69,7 +71,9 @@ function Student() {
     </fieldset>
 
     </>
-    );
+
+   
+  )
 }
 
-export default Student;
+export default Profile

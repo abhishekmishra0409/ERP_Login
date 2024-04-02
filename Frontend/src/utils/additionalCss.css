@@ -33,4 +33,51 @@
     outline: none;
     border-color: #0056b3;
   }
-  
+
+
+  /*  Calendor CSs */
+  .events {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .events .ant-badge-status {
+    width: 100%;
+    overflow: hidden;
+    font-size: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .notes-month {
+    font-size: 28px;
+    text-align: center;
+  }
+  .notes-month section {
+    border: 0.5px solid black;
+    font-size: 20px;
+  }
+ /* additionalCss.css */
+
+/* Style for the entire calendar */
+.small-calendar {
+  width: 70%; 
+}
+
+.ant-picker-calendar.ant-picker-calendar-full .ant-picker-calendar-date-content {
+  position: static;
+  width: auto;
+  height: 25px;
+  overflow-y: auto;
+  color: rgba(0, 0, 0, 0.88);
+  line-height: 1.2;
+  text-align: start;
+}
+.Calender{
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

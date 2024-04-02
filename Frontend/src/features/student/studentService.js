@@ -86,11 +86,31 @@ const updateName = async (details) => {
   }
 };
 
+const getAttendance = async() =>{
+  try{
+    const token = getToken();
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+    const url = base_url + "student/attendance";
+    const response = await axios.get(url, {
+      headers: headers,
+      withCredentials: true,
+    });
+
+    return response;
+  }catch(error){
+    console.error("error occurred "+error);
+    throw error;
+  }
+}
 const studentService = {
   getAll,
   timetable,
   updatePassword,
   updateName,
+  getAttendance
 };
 
 export default studentService;

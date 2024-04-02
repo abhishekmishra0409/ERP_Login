@@ -11,6 +11,7 @@ import {
 
 import { uploadAttendance } from "../Controllers/attendanceController.js";
 import {sendMessage} from "../Controllers/messageController.js";
+import {deleteMarks, updateMarks, uploadMarks} from "../Controllers/marksController.js";
 
 const router = express.Router();
 
@@ -33,4 +34,8 @@ router.delete("/delete-timetable",isTeacher, deleteTimetable);
 router.post("/send-message",isTeacher,sendMessage)
 router.get("/logout",isTeacher,logoutRoleController)
 
+router.post("/upload-marks", uploadMarks);
+// router.get("/view-marks", viewMarks)
+router.post("/update-marks", updateMarks);
+router.delete("/delete-marks/:studentId", deleteMarks);
 export default router;

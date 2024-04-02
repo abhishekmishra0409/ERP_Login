@@ -7,9 +7,9 @@ import {
 } from 'antd';
 import { RxUpdate } from "react-icons/rx";
 const { Option } = Select;
-import { updateName } from '../features/student/studentSlice';
+import { updateName } from '../../features/student/studentSlice';
 import { useDispatch } from 'react-redux';
-import { studentProfile } from '../features/student/studentSlice';
+import { studentProfile } from '../../features/student/studentSlice';
 import { message } from 'antd';
 const formItemLayout = {
   labelCol: {
@@ -46,16 +46,16 @@ const Update = () => {
   const dispatch = useDispatch();
   const onFinish = async(values) => {
    try{
-     // console.log('Received values of form: ', values);
+     console.log('Received values of form: ', values);
     const res = await dispatch(updateName(values));
     
-
+// console.log(res)
     // console.log(res.payload.status);
     if(res.payload.status == 200){
        sessionStorage.removeItem("userData");
      
        dispatch(studentProfile()).then((get) => {
-        // console.log(get.payload.success);
+        console.log(get.payload);
         let t = get.payload.success;
         if (t === true) {
           message.success("Details updated successfully");
@@ -70,7 +70,7 @@ const Update = () => {
   
   
   return (
-    <div style={{  boxShadow:"0px 0px 10px 0.1px grey", padding: '20px 40px', borderRadius: '5px'}}>
+    <div style={{   padding: '20px 40px', borderRadius: '5px'}}>
 
     <h4>Update Details</h4><p style={{color:'lightgrey'}}>You can enter any field which you want to update</p>
     <Form

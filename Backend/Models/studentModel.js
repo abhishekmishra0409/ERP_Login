@@ -61,7 +61,6 @@ const studentSchema = new mongoose.Schema(
 
 studentSchema.statics.fetchAllBatches = async function () {
     try {
-        // Use aggregation to fetch all unique batch numbers
         const batches = await this.distinct("batch");
 
         return batches;
@@ -70,5 +69,6 @@ studentSchema.statics.fetchAllBatches = async function () {
         throw error;
     }
 };
+
 
 export default mongoose.model("Student", studentSchema);

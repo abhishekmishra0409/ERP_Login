@@ -12,6 +12,7 @@ import { IoCalendarNumberOutline } from "react-icons/io5";
 import { PiChalkboardTeacherDuotone } from "react-icons/pi";
 import { MdOutlineClass } from "react-icons/md";
 import { MdOutlinePublishedWithChanges } from "react-icons/md";
+import { Avatar,Drawer } from "antd";
 
 
 import { useDispatch } from "react-redux";
@@ -22,7 +23,15 @@ const LayoutD = () => {
   const dispatch = useDispatch();
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const [visible, setVisible] = useState(false);
 
+  const showProfile = () => {
+    setVisible(true);
+  };
+
+  const onClose = () => {
+    setVisible(false);
+  };
   
 
   const handleSignOut = () => {
@@ -43,7 +52,8 @@ const LayoutD = () => {
   };
 
 
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  const user = JSON.parse(sessionStorage.getItem("userData"));
+
 // console.log(user);
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -133,7 +143,35 @@ const LayoutD = () => {
               <div >
                 {user ? (
                   <>
-                    <h5 style={{height:'100%', fontSize:"17px"}}  className="mb-0">{user.name}</h5>         
+                    <Avatar
+                      style={{ cursor: 'pointer',backgroundColor: '#fde3cf', color: '#f56a00'  }}
+                      size={35}
+                      icon={<UserOutlined />}
+                      onClick={showProfile}
+                    />
+                    <Drawer
+                      title="Profile"
+                      placement="right"
+                      closable={true}
+                      onClose={onClose}
+                      open={visible}
+                    >
+                    <div style={{display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column', width:'100%'}}>
+
+                      <Avatar 
+                      size={60} 
+                      style={{backgroundColor: '#fde3cf', color: '#f56a00'}} 
+                      icon={<UserOutlined />} />
+                      <h3>{user.name}</h3>
+                      <p>{user.email}</p>
+                      
+                    </div>
+                    <div style={{paddingTop:"10px"}}>
+                    <button style={{width:'100%',border:'0.2px solid grey', backgroundColor:'white'}} onClick={()=> navigate("/student/profile") }>Profile</button>
+                    <button style={{width:'100%',border:'0 0.2px solid grey', backgroundColor:'white' }} onClick={()=> navigate("/student/update") }>Update Profile</button>
+                  
+                    </div>
+                    </Drawer>
                   </>
                 ) : (
                   <h5 className="mb-0">{user.email}</h5>  
@@ -147,8 +185,12 @@ const LayoutD = () => {
             margin: "24px 16px",
             padding: 24,
             minHeight: 280,
+            maxHeight: "calc(100vh - 112px)", 
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
+            overflow: 'auto' ,
+            scrollbarWidth: 'none',
+            // scrollbarColor: '#888 transparent' 
           }}
         >
         

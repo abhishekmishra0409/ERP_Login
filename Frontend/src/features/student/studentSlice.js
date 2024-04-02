@@ -7,7 +7,7 @@ export const studentProfile = createAsyncThunk(
     try {
       const response = await studentService.getAll();
       sessionStorage.setItem('userData', JSON.stringify(response.student));
-      return response.student;
+      return response;
     } catch (error) {
       console.error("Error fetching student profile:", error);
       throw error;
@@ -54,6 +54,20 @@ export const updateName = createAsyncThunk(
   }
 );
 
+export const attendance = createAsyncThunk(
+  "student/attendance",
+  async()=>{
+    try{
+      const res = await studentService.getAttendance();
+      return res.data;
+
+    }catch(error){
+      console.error('error in geting attendance ');
+      throw error;
+    }
+  }
+)
+
 const studentSlice = createSlice({
   name: "student",
   initialState: {
@@ -62,6 +76,7 @@ const studentSlice = createSlice({
     isLoading: false,
     isSuccess: false,
     errorMessage: "",
+    allAttendance:""
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -110,7 +125,17 @@ const studentSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.errorMessage = action.error.message;
-      });
+      })
+      // attendance storiing in payload 
+      .addCase(attendance.pending, (state, action)=>{
+        console.log("Error occured "+ action.payload);
+      })
+      .addCase(attendance.fulfilled, (state,action)=>{
+        state.allAttendance = action.payload.data;
+      })
+      .addCase(attendance.rejected, ()=>{
+        console.log("Try again");
+      })
   },
 });
 

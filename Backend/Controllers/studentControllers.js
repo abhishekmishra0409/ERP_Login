@@ -462,3 +462,31 @@ console.log(department,sem);
     console.log(error);
   }
 }
+
+
+export const getBatch = async (req, res) => {
+  try {
+    // Call the fetchAllBatches static method defined in the student model
+    const batches = await studentModel.fetchAllBatches();
+
+    res.status(200).json(batches);
+  } catch (error) {
+    console.error("Error fetching all batches:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+
+// // View MST marks
+import marksModel from "../Models/marksModel.js"
+export const viewMarks = async (req, res) => {
+  try {
+    const { studentId } = req.query;
+    // const studentId = req.student._id;
+    const marks = await marksModel.findOne({ studentId });
+    console.log(marks);
+    res.status(200).json({ marks });
+  } catch (error) {
+    res.status(500).json({ error: error.message});
+  }
+};

@@ -1,6 +1,6 @@
 import  { useState } from 'react';
 import { Input, Button, message } from 'antd';
-import { updatePassword } from '../features/student/studentSlice';
+import { updatePassword } from '../../features/student/studentSlice';
 import { useDispatch } from 'react-redux';
 
 const PasswordUpdatePage = () => {

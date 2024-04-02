@@ -2,11 +2,21 @@ import Attendance from "../models/attendanceModel.js";
 
 export const uploadAttendance = async (req, res) => {
   try {
-    const { attendance,year, month, day, } = req.body;
+    const { attendance, year, month, day } = req.body;
+
+    // Validate if attendance is provided and is an array
+    if (!Array.isArray(attendance)) {
+      return res.status(400).json({ error: "Attendance data is missing or invalid" });
+    }
 
     // Iterate over each attendance entry and update or add to the attendance records
-    for (const { studentId,  status } of attendance) {
+    for (const { studentId, status } of attendance) {
       let attendanceRecord = await Attendance.findOne({ studentId });
+
+      // Check if attendanceRecord exists
+      if (!attendanceRecord) {
+        attendanceRecord = new Attendance({ studentId, attendance: [] });
+      }
 
       // Find the attendance entry for the specified day
       const existingAttendanceIndex = attendanceRecord.attendance.findIndex(
@@ -26,6 +36,7 @@ export const uploadAttendance = async (req, res) => {
 
     res.status(200).json({ message: "Attendance updated successfully" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 };

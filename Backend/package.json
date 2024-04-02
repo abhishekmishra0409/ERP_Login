@@ -6,6 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"concurrently \"npm run server\" \"npm run client\" \"npm run admin\"",
+    "client":"cd.. && cd Frontend && npm run dev",
+    "admin": "cd.. && cd admin && npm run dev",
     "server": "nodemon server.js"
   },
   "author": "",
@@ -13,6 +16,7 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.0.3",
+    "concurrently": "^8.2.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
