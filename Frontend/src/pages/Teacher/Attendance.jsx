@@ -35,10 +35,9 @@ function Attendance() {
             dispatch(fetchStudentsByBatch(selectedBatch))
                 .then((response) => {
                     setStudents(response.payload);
-                    // Initialize attendance data when students are fetched
                     setAttendanceData(response.payload.students.map(student => ({
                         studentId: student._id,
-                        status: '' // Initialize status as empty string
+                        status: '' 
                     })));
                 })
                 .catch((error) => {
@@ -53,6 +52,7 @@ function Attendance() {
 
     const handleBatchSelect = (value) => {
         setSelectedBatch(value);
+        setStudents([])
     };
 
     const handleDateChange = (date) => {
@@ -66,7 +66,6 @@ function Attendance() {
             setSelectedBatch(null);
             message.success('Attendance submitted successfully');
         } catch (error) {
-            // console.error('Error uploading attendance:', error);
             message.error("Error at Uploading data")
         } finally {
             setIsLoading(false);

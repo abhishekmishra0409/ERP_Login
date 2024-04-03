@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Image, message } from 'antd';
+import { Image, message, Button, Spin } from 'antd';
 import { getTimetable } from '../../features/student/studentSlice';
 import { useDispatch } from 'react-redux';
 import '../../utils/additionalCss.css';
@@ -7,14 +7,15 @@ import '../../utils/additionalCss.css';
 const Timetable = () => {
   const dispatch = useDispatch();
   const [imgUrl, setImgUrl] = useState('');
+  const [loading, setLoading] = useState(false);
   const storedUserData = JSON.parse(sessionStorage.getItem('userData')) || {};
-  const department = storedUserData.department;
-  const sem = storedUserData.sem;
+  const batch = storedUserData.batch;
 
-  const data = { department, sem };
+  const data = { batch };
 
   const getTimeTable = async () => {
     try {
+      setLoading(true);
       const queryParams = new URLSearchParams(data).toString();
       const res = await dispatch(getTimetable(queryParams));
       const img = await res.payload.timeTableURL;
@@ -23,6 +24,8 @@ const Timetable = () => {
     } catch (error) {
       console.error('Error fetching timetable:', error);
       message.error('Failed to fetch timetable');
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -32,19 +35,23 @@ const Timetable = () => {
         <h3>Time-Table</h3>
         <div style={{ display: 'flex', justifyContent: 'flex-start', gap: 40 }}>
           <div style={{ display: 'flex', gap: 10 }}>
-            Department : <h6>{department}</h6>
-          </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            Semester: <h6>{sem}</h6>
+            Batch : <h6>{batch}</h6>
           </div>
         </div>
-        <button onClick={getTimeTable}>Get Time-Table</button>
-        <div>
-          {imgUrl && (
-            <Image
-              width={500}
-              src={imgUrl}
-            />
+        <Button type="primary" onClick={getTimeTable} loading={loading}>
+          Get Time-Table
+        </Button>
+        <div style={{ marginTop: '20px', textAlign: 'center' }}> 
+          {loading ? ( 
+            <Spin size="large" />
+          ) : (
+            imgUrl && (
+              <Image
+                width={500}
+                src={imgUrl}
+                style={{ margin: '0 auto' }}
+              />
+            )
           )}
         </div>
       </div>

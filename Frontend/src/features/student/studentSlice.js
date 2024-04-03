@@ -68,6 +68,20 @@ export const attendance = createAsyncThunk(
   }
 )
 
+
+export const mstNumbers = createAsyncThunk(
+  "student/mst",
+  async(data)=>{
+    try{
+      const res = await studentService.mstResult(data);
+      return res.data;
+    }catch(error){
+      console.log(error);
+      throw error;
+    }
+  }
+)
+
 const studentSlice = createSlice({
   name: "student",
   initialState: {
@@ -134,6 +148,16 @@ const studentSlice = createSlice({
         state.allAttendance = action.payload.data;
       })
       .addCase(attendance.rejected, ()=>{
+        console.log("Try again");
+      })
+
+      .addCase(mstNumbers.pending, ()=>{
+        console.log("Pending ")
+      })
+      .addCase(mstNumbers.fulfilled, (state, action)=>{
+        state.result = action.payload.data;
+      })
+      .addCase(mstNumbers.rejected, ()=>{
         console.log("Try again");
       })
   },

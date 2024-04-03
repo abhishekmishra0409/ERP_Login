@@ -105,12 +105,26 @@ const getAttendance = async() =>{
     throw error;
   }
 }
+
+const mstResult = async(data)=>{
+  try{
+    const url = base_url + "student/view-marks?" + data;
+    // console.log(url)
+    const res = await axios.get(url);
+    return res;
+  }catch(error){
+    console.error(error);
+    throw error;
+  }
+}
+
 const studentService = {
   getAll,
   timetable,
   updatePassword,
   updateName,
-  getAttendance
+  getAttendance,
+  mstResult
 };
 
 export default studentService;

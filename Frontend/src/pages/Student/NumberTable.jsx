@@ -1,5 +1,6 @@
 import React from 'react';
 import { Space, Table, Tag } from 'antd';
+
 const NumberTable = ({marks}) => 
 {
   const columns = [
@@ -45,12 +46,11 @@ const NumberTable = ({marks}) =>
     marksObtained: mark.marksObtained,
   }));
 
-  
-  console.log(marks)
+
   return (
   <>
     <Table columns={columns} dataSource={data} />;
   </>
-  );
+  )
 }
 export default NumberTable;

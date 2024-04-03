@@ -7,6 +7,8 @@ import {
 import { Outlet, useNavigate } from "react-router-dom";
 import { Layout, Menu, Button, theme, message } from "antd";
 import { FaSignOutAlt } from "react-icons/fa";
+import { IoCalendarNumberOutline } from "react-icons/io5";
+import { PiChalkboardTeacherDuotone } from "react-icons/pi";
 import { useDispatch } from "react-redux";
 import { teacherLogout } from "../features/auth/authSlice";
 
@@ -48,8 +50,13 @@ const LayoutD = () => {
       label: "Dashboard",
     },
     {
+      key: "timetable",
+      icon: <IoCalendarNumberOutline className="fs-5" />,
+      label: "Time-Table",
+    },
+    {
       key: "attendance",
-      icon: <UserOutlined className="fs-5" />,
+      icon: <PiChalkboardTeacherDuotone className="fs-5" />,
       label: "Attendance",
     },
     {

@@ -1,11 +1,7 @@
 import mongoose from "mongoose"
 
 const timeTableDetails = new mongoose.Schema({
-    department:{
-        type:String,
-        required:true
-    },
-    sem:{
+    batch:{
         type:String,
         required:true
     },

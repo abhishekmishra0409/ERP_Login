@@ -16,6 +16,7 @@ const Attendance = () => {
     const res = await dispatch(attendance());
     setAttendanceData(res.payload); 
   }
+
  
   
   useEffect(()=>{
@@ -63,7 +64,7 @@ const Attendance = () => {
         </div>
 
         <div>
-          <Progress type="circle" percent={(attendanceData.totalPresent / attendanceData.totalAttendance) * 100} format={(percent) => `${percent} %`} />
+          <Progress type="circle" percent={Math.round((attendanceData.totalPresent / attendanceData.totalAttendance) * 100)} format={(percent) => `${percent}%`}/>
           <p>Attendance Percentage</p>
         </div>
 

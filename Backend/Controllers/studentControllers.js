@@ -210,7 +210,6 @@ export const updatePassword = async (req, res) => {
     const { _id } = req.student;
     const { password } = req.body;
 
-
     if (!password) {
       return res.status(400).json({ message: "Password is required" });
     }
@@ -434,24 +433,21 @@ export const getStudentAttendance = async (req, res) => {
   }
 };
 
-
-
-
 // import studentModel from "../Models/studentModel.js";
 import timetable from "../Models/timeTableModel.js"; 
 export const getTimeTable = async(req,res) =>{
   try{
-    const { department, sem } = req.query;
-   if( !department || !sem){
+    const { batch } = req.query;
+   if( !batch){
       return res.status(400).json({
       success: false,
       message:"Complete all the fields "
      });
    }
 
-console.log(department,sem);
+console.log(batch);
    
-    const getAllTimeTable = await timetable.findOne({department,sem})
+    const getAllTimeTable = await timetable.findOne({ batch })
     // console.log(getAllTimeTable.length)
     // console.log(getAllTimeTable.timeTableURL);
     return res.status(200).json({

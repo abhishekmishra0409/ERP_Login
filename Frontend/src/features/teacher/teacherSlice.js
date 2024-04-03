@@ -27,6 +27,18 @@ export const fetchStudentsByBatch = createAsyncThunk(
   }
 );
 
+export const uploadTimeTable = createAsyncThunk(
+  'teacher/uploadTimeTable',
+  async (formData) => {
+    try {
+      const response = await teacherService.uploadTimeTable(formData);
+      return response;
+    } catch (error) {
+      console.error('Error uploading time table:', error);
+      throw error;
+    }
+  }
+);
 
 const initialState = {
   batches: [],
@@ -65,7 +77,17 @@ const teacherSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
       })
-     
+      .addCase(uploadTimeTable.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(uploadTimeTable.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(uploadTimeTable.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+      });
   },
 });
 

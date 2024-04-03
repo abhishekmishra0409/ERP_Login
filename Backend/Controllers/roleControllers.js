@@ -121,79 +121,85 @@ async function uploading(file, folder){
   return await cloudinary.uploader.upload(file.tempFilePath, options);
 }
 
-// upload time table contorller
-export const uploadTimeTable = async(req,res)=>{
-  try{
-    const imgFile =req.files.imgFile;
-    const {department, sem} = req.body;
+export const uploadTimeTable = async (req, res) => {
+  try {
+    const imgFile = req.files.imgFile;
+    const { batch } = req.body;
 
-    // console.log(imgFile)
-    if(!imgFile){
-      return  res.status(400).json({
-        success:false,
-        message:"Image file is not found"
-      })
+    if (!imgFile) {
+      return res.status(400).json({
+        success: false,
+        message: "Image file is not found"
+      });
     }
-  
+
     const supportedFiles = ["jpeg", "jpg", "png"];
     const fileType = imgFile.name.split(".")[1];
-    // console.log(fileType);
 
-    if(!supportedFiles.includes(fileType)){
+    if (!supportedFiles.includes(fileType)) {
       return res.status(400).json({
-        success:false,
-        message:"File not supported"
-    })
+        success: false,
+        message: "File not supported"
+      });
     }
 
+    const uploadImg = await uploading(imgFile, "TimeTable");
 
-  const uploadImg = await uploading(imgFile, "TimeTable");
-  // console.log(uploadImg);
-    if(!uploadImg){
-      res.status(400).json({
-        success:false,
-        msg:"Error while uploading try again",
-        error: error
-    })
+    if (!uploadImg) {
+      return res.status(400).json({
+        success: false,
+        msg: "Error while uploading try again"
+      });
     }
-    
-    const sendDetail = await new timetable({
-      department,
-      sem,
-      timeTableURL:uploadImg.secure_url, 
-      cloudinary_name:uploadImg.public_id}).save();
-  
-// console.log(sendDetail)
 
-    
-    return res.status(200).json({
-      success:true,
-      msg:"File uploaded successfully",
-      data: sendDetail
-  })
+    let existingRecord = await timetable.findOne({ batch });
 
-  }catch(error){
-    console.log(error)
+    if (existingRecord) {
+      await cloudinary.uploader.destroy(existingRecord.cloudinary_name);
+      existingRecord.timeTableURL = uploadImg.secure_url;
+      existingRecord.cloudinary_name = uploadImg.public_id;
+      await existingRecord.save();
+
+      return res.status(200).json({
+        success: true,
+        msg: "File updated successfully",
+        data: existingRecord
+      });
+    } else {
+      const newRecord = await new timetable({
+        batch,
+        timeTableURL: uploadImg.secure_url,
+        cloudinary_name: uploadImg.public_id
+      }).save();
+
+      return res.status(200).json({
+        success: true,
+        msg: "File uploaded successfully",
+        data: newRecord
+      });
+    }
+
+  } catch (error) {
+    console.log(error);
     return res.status(400).json({
-      success:false,
-      msg:"Error while uploading",
-      error: error
-  })
+      success: false,
+      msg: "Error while uploading",
+      error: error.message
+    });
   }
-}
-
+};
 
 // delete time Table
 export const deleteTimetable = async(req,res) =>{
   try{
-    const {department, sem} = req.query;
-    if(!department || !sem){
+    const {batch} = req.query;
+    if(!batch){
        return res.status(400).json({
         success:false,
         msg:"Fill all the fields"
     });
   }
-  const findAndDestroy = await timetable.findOne({department,sem});
+  const findAndDestroy = await timetable.findOne({batch});
   const del = await cloudinary.uploader.destroy(findAndDestroy.cloudinary_name);
   if(!del){
     return res.status(400).json({
@@ -201,7 +207,7 @@ export const deleteTimetable = async(req,res) =>{
       msg:"not deleted from cloud"
   });
   }
-  const deleteTt = await timetable.deleteOne({department, sem});
+  const deleteTt = await timetable.deleteOne({batch});
   return res.status(200).json({
     success:true,
     msg:"Deleted successfully",

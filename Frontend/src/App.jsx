@@ -15,9 +15,9 @@ import Password from './pages/Student/Password';
 import Profile from './pages/Student/Profile';
 import TeacherAttendance from'./pages/Teacher/Attendance'
 import UnderProcess from './pages/UnderProcess';
+import TimeTableUpload from './pages/Teacher/TimeTableUpload';
 
 function App() {
-
  
   return (
     <>
@@ -40,7 +40,7 @@ function App() {
       <Route path='/teacher' element={<TeacherLayout/>} >
         <Route  path='' element={<Teacher/>}/>
         <Route  path='attendance' element={<TeacherAttendance/>}/>
-
+        <Route  path='timetable' element={<TimeTableUpload/>}/>
       </Route>
     </Routes>
     </>

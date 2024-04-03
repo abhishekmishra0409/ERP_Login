@@ -39,11 +39,27 @@ const getStudentByBatch = async (batch) => {
     }
 };
 
+const uploadTimeTable = async (formData) => {
+    try {
+        const url = base_url + "teacher/upload-timetable";
+        const token = getToken();
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+        };
+        const response = await axios.post(url, formData, {  headers: headers,
+            withCredentials: true, });
+        return response.data;
+    } catch (error) {
+        console.error('Error uploading time table:', error);
+        throw error;
+    }
+};
 
 const teacherService = {
     getBatches,
-    getStudentByBatch
-  
+    getStudentByBatch,
+    uploadTimeTable
 };
 
 export default teacherService;
