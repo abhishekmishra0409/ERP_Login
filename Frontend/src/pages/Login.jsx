@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { studentLogin, teacherLogin } from '../features/auth/authSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { studentProfile } from '../features/student/studentSlice';
+import { fetchBatches } from '../features/teacher/teacherSlice';
 
 
 const Login = () => {
@@ -22,6 +23,7 @@ const Login = () => {
       } else if (userType === 'teacher') {
         await dispatch(teacherLogin(values)).unwrap();
         navigateTo('/teacher');
+        dispatch(fetchBatches())
       }
       message.success('Login successful!');
     } catch (error) {

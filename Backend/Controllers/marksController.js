@@ -3,30 +3,59 @@ import marksModel from "../Models/marksModel.js";
 // upload marks
 export const uploadMarks = async (req, res) => {
   try {
-    const { studentId, marks } = req.body;
+    const { semester, exam, students } = req.body;
 
-    const mark = new marksModel({ studentId, marks });
+    if (!Array.isArray(students)) {
+      return res.status(400).json({ error: 'Students data must be an array' });
+    }
+    const uploadedMarks = [];
 
-    await mark.save();
+    for (const { studentId, marks } of students) {
+      let existingMark = await marksModel.findOneAndUpdate(
+          { semester, exam, 'students.studentId': studentId },
+          {
+            $push: { 'students.$[student].marks': marks },
+          },
+          {
+            arrayFilters: [{ 'student.studentId': studentId }],
+            new: true,
+          }
+      );
 
-    res.status(201).json({ message: "Marks uploaded successfully", mark });
+      if (!existingMark) {
+
+        const mark = new marksModel({ semester, exam, students: [{ studentId, marks }] });
+        await mark.save();
+        uploadedMarks.push(mark);
+      } else {
+
+        const existingStudent = existingMark.students.find(student => student.studentId === studentId);
+        if (existingStudent) {
+          marks.forEach(({ subject, marksObtained }) => {
+            const existingSubject = existingStudent.marks.find(existing => existing.subject === subject);
+            if (existingSubject) {
+
+              existingSubject.marksObtained = marksObtained;
+            } else {
+
+              existingStudent.marks.push({ subject, marksObtained });
+            }
+          });
+
+          await existingMark.save();
+          uploadedMarks.push(existingMark);
+        }
+      }
+    }
+
+    res.status(201).json({ message: 'Marks uploaded successfully', uploadedMarks });
+
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// // view marks
-// export const viewMarks = async (req, res) => {
-//   try {
-//     const { studentId } = req.query;
-
-//     const marks = await marksModel.findOne({ studentId });
-
-//     res.status(200).json({ marks });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
 
 //  update marks
 export const updateMarks = async (req, res) => {

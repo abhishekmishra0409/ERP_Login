@@ -35,7 +35,7 @@ router.get("/logout", logoutController);
 router.get("/attendance",authMiddleware ,getStudentAttendance);
 router.get("/get-timetable", getTimeTable);
 router.get('/batch',getBatch)
-router.get("/view-marks", viewMarks);
+router.get("/view-marks",authMiddleware, viewMarks);
 
 router.get("/get-message",authMiddleware, getMessage);
 router.get('/:enrollment',getStudentByEnrollment)

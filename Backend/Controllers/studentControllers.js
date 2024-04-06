@@ -474,15 +474,31 @@ export const getBatch = async (req, res) => {
 
 
 // // View MST marks
-import marksModel from "../Models/marksModel.js"
+import marksModel from "../Models/marksModel.js";
+
 export const viewMarks = async (req, res) => {
   try {
-    const { studentId } = req.query;
-    // const studentId = req.student._id;
-    const marks = await marksModel.findOne({ studentId });
-    console.log(marks);
-    res.status(200).json({ marks });
+    const studentId = req.student._id;
+    const { semester, exam } = req.query;
+
+    const queryObj = { semester, exam };
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+
+    const marks = await marksModel.findOne({ ...JSON.parse(queryStr), 'students.studentId': studentId });
+
+    if (!marks) {
+      return res.status(404).json({ message: 'Marks not found for the student in the specified semester and exam' });
+    }
+
+    const studentMarks = marks.students.find(student => student.studentId.toString() === studentId.toString());
+
+    if (!studentMarks || !studentMarks.marks) {
+      return res.status(404).json({ message: 'Marks not found for the student in the specified semester and exam' });
+    }
+
+    res.status(200).json({ marks: studentMarks.marks });
   } catch (error) {
-    res.status(500).json({ error: error.message});
+    res.status(500).json({ error: error.message });
   }
 };

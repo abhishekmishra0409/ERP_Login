@@ -9,6 +9,7 @@ import { Layout, Menu, Button, theme, message } from "antd";
 import { FaSignOutAlt } from "react-icons/fa";
 import { IoCalendarNumberOutline } from "react-icons/io5";
 import { PiChalkboardTeacherDuotone } from "react-icons/pi";
+import { MdOutlineClass } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { teacherLogout } from "../features/auth/authSlice";
 
@@ -27,7 +28,7 @@ const LayoutD = () => {
       .then(() => {
         sessionStorage.removeItem("user");
         sessionStorage.removeItem("refreshToken");
-
+        sessionStorage.removeItem('batches')
         navigate("/");
         message.success("Logout Successfully!");
       })
@@ -58,6 +59,11 @@ const LayoutD = () => {
       key: "attendance",
       icon: <PiChalkboardTeacherDuotone className="fs-5" />,
       label: "Attendance",
+    },
+    {
+      key: "mst",
+      icon: <MdOutlineClass className="fs-5" />,
+      label: "MST Marks",
     },
     {
       key: "signout",

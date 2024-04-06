@@ -16,6 +16,7 @@ import Profile from './pages/Student/Profile';
 import TeacherAttendance from'./pages/Teacher/Attendance'
 import UnderProcess from './pages/UnderProcess';
 import TimeTableUpload from './pages/Teacher/TimeTableUpload';
+import MstUpload from './pages/Teacher/MstUpload';
 
 function App() {
  
@@ -41,6 +42,8 @@ function App() {
         <Route  path='' element={<Teacher/>}/>
         <Route  path='attendance' element={<TeacherAttendance/>}/>
         <Route  path='timetable' element={<TimeTableUpload/>}/>
+        <Route  path='mst' element={<MstUpload/>}/>
+
       </Route>
     </Routes>
     </>

@@ -108,9 +108,16 @@ const getAttendance = async() =>{
 
 const mstResult = async(data)=>{
   try{
+    const token = getToken();
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
     const url = base_url + "student/view-marks?" + data;
-    // console.log(url)
-    const res = await axios.get(url);
+    const res = await axios.get(url, {
+      headers: headers,
+      withCredentials: true,
+    });
     return res;
   }catch(error){
     console.error(error);

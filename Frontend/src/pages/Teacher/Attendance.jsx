@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchBatches, fetchStudentsByBatch } from '../../features/teacher/teacherSlice';
+import { fetchStudentsByBatch } from '../../features/teacher/teacherSlice';
 import { Select, Table, Spin, Alert, DatePicker, Button, message } from 'antd';
 import axios from 'axios';
 const { Option } = Select;
@@ -20,13 +20,14 @@ function Attendance() {
     const [attendanceData, setAttendanceData] = useState([]); 
 
     async function batches() {
-        const res = await dispatch(fetchBatches());
-        setBatch(res.payload);
+        const res = sessionStorage.getItem('batches')
+                const parsedBatch = JSON.parse(res);
+                setBatch(parsedBatch);
     }
 
     useEffect(() => {
         batches();
-    }, [dispatch]);
+    }, []);
 
     useEffect(() => {
         if (selectedBatch && selectedDate) {
@@ -61,7 +62,7 @@ function Attendance() {
     const handleSubmitAttendance = async () => {
         try {
             setIsLoading(true);
-            const response = await uploadAttendanceApi(selectedDate, attendanceData);
+            await uploadAttendanceApi(selectedDate, attendanceData);
             setAttendanceData([]); 
             setSelectedBatch(null);
             message.success('Attendance submitted successfully');
@@ -166,7 +167,7 @@ function Attendance() {
             {selectedBatch && selectedDate && (
                 <div>
                     <h3>Students of Batch: {selectedBatch}</h3>
-                    <Table dataSource={students.students} columns={columns} loading={isLoading} rowKey="id" />
+                    <Table dataSource={students.students} columns={columns} loading={isLoading} rowKey="_id" pagination={false} />
                 </div>
             )}
         </div>

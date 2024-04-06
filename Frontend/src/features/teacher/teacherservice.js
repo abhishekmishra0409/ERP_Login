@@ -10,7 +10,9 @@ const getBatches = async () => {
         const url = base_url + "student/batch";
         const response = await axios.get(url);
         const batches = response.data;
+        sessionStorage.setItem('batches', JSON.stringify(batches));
         return batches;
+        
     } catch (error) {
         console.error('Error fetching batches:', error);
         throw error;
@@ -47,8 +49,10 @@ const uploadTimeTable = async (formData) => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
         };
-        const response = await axios.post(url, formData, {  headers: headers,
-            withCredentials: true, });
+        const response = await axios.post(url, formData, {
+            headers: headers,
+            withCredentials: true,
+        });
         return response.data;
     } catch (error) {
         console.error('Error uploading time table:', error);
@@ -56,10 +60,30 @@ const uploadTimeTable = async (formData) => {
     }
 };
 
+const postMarks = async (marksData) => {
+    try {
+        const url = base_url + "teacher/upload-marks";
+        const token = getToken();
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        };
+        const response = await axios.post(url, marksData, {
+            headers: headers,
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error posting marks:', error);
+        throw error;
+    }
+};
+
 const teacherService = {
     getBatches,
     getStudentByBatch,
-    uploadTimeTable
+    uploadTimeTable,
+    postMarks,
 };
 
 export default teacherService;

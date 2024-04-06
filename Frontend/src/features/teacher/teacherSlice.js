@@ -40,6 +40,19 @@ export const uploadTimeTable = createAsyncThunk(
   }
 );
 
+export const postMarks = createAsyncThunk(
+  'teacher/postMarks',
+  async (marksData) => {
+    try {
+      const response = await teacherService.postMarks(marksData);
+      return response;
+    } catch (error) {
+      console.error('Error posting marks:', error);
+      throw error;
+    }
+  }
+);
+
 const initialState = {
   batches: [],
   students: [],
@@ -85,6 +98,17 @@ const teacherSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(uploadTimeTable.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+      })
+      .addCase(postMarks.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(postMarks.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(postMarks.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
       });

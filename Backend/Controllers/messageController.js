@@ -8,18 +8,14 @@ export const sendMessage = async (req, res) => {
         const {  content, recipients } = req.body;
         const sender = req.user._id
 
-        // Fetch all batches if recipients is not specified
         let batches = recipients || await Student.fetchAllBatches();
 
-        // If recipients are specified, ensure they are batch numbers
         if (recipients) {
-            // Validate recipients to ensure they are batch numbers
-            // If they are not batch numbers, treat them as individual student IDs
+
             const validBatchNumbers = await Student.find({ batch: { $in: recipients } }).distinct('batch');
             batches = validBatchNumbers.length > 0 ? validBatchNumbers : recipients;
         }
 
-        // Create and save message for each batch
         const messagePromises = batches.map(async (batch) => {
             const message = new Message({
                 sender,
@@ -29,7 +25,6 @@ export const sendMessage = async (req, res) => {
             return await message.save();
         });
 
-        // Execute all message creation promises in parallel
         const messages = await Promise.all(messagePromises);
 
         res.status(200).json({ success: true, messages });
