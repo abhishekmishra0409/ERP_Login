@@ -10,34 +10,38 @@ import AttendanceModel from "../models/attendanceModel.js";
 
 export const registerController = async (req, res) => {
   try {
-    const { email, batch,enrollment,department } = req.body;
+    const { email, batch, enrollment, department } = req.body;
     // Validations
-    if (!email || !enrollment || !batch ||!department) {
+    if (!email || !enrollment || !batch || !department) {
       return res.status(400).send({ message: "All fields are required" });
     }
 
     // Check if student already exists
-    const existingStudent = await studentModel.findOne({ $or: [{ email: email }, { enrollment: enrollment }] });
+    const existingStudent = await studentModel.findOne({
+      $or: [{ email: email }, { enrollment: enrollment }],
+    });
 
     if (existingStudent) {
-      return res.status(409).json({success: false, message: "Student already exists" });
+      return res
+        .status(409)
+        .json({ success: false, message: "Student already exists" });
     }
 
     // Register student
     const student = await studentModel.create({
       email,
-      enrollment ,
+      enrollment,
       batch,
-      department
+      department,
     });
     const password = student.password;
 
     const hashedPassword = await hashPassword(password);
 
     await studentModel.findByIdAndUpdate(
-        student._id,
-        { password: hashedPassword },
-        { new: true }
+      student._id,
+      { password: hashedPassword },
+      { new: true }
     );
 
     // Respond with success message
@@ -47,9 +51,9 @@ export const registerController = async (req, res) => {
       user: {
         email: student.email,
         batch: student.batch,
-        enrollment:student.enrollment,
+        enrollment: student.enrollment,
         password: hashedPassword,
-        department:student.department
+        department: student.department,
       },
     });
   } catch (error) {
@@ -64,36 +68,35 @@ export const loginController = async (req, res) => {
     // Validation
     if (!email || !password) {
       return res
-          .status(400)
-          .send({ success: false, message: "Invalid email or password" });
+        .status(400)
+        .send({ success: false, message: "Invalid email or password" });
     }
 
     // Check if the student exists
     const student = await studentModel.findOne({ email });
     if (!student) {
       return res
-          .status(404)
-          .send({ success: false, message: "Email does not exist" });
+        .status(404)
+        .send({ success: false, message: "Email does not exist" });
     }
 
     // Verify the password
     const match = await comparePassword(password, student.password);
     if (!match) {
       return res
-          .status(401)
-          .send({ success: false, message: "Password does not match" });
+        .status(401)
+        .send({ success: false, message: "Password does not match" });
     }
 
     // Generate refresh token
-    const refreshToken = await generateRefreshToken(student._id , "0822IT21");
+    const refreshToken = await generateRefreshToken(student._id, "0822IT21");
 
     // Update refresh token in the database
     await studentModel.findByIdAndUpdate(
-        student._id,
-        { refreshToken: refreshToken },
-        { new: true }
+      student._id,
+      { refreshToken: refreshToken },
+      { new: true }
     );
-
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -110,7 +113,7 @@ export const loginController = async (req, res) => {
         name: student?.name,
         email: student?.email,
         batch: student?.batch,
-        enrollment: student?.enrollment
+        enrollment: student?.enrollment,
       },
     });
   } catch (error) {
@@ -128,7 +131,9 @@ export const viewProfileController = async (req, res) => {
 
     // If student not found, return 404 error
     if (!student) {
-      return res.status(404).json({ success: false, message: "Student not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Student not found" });
     }
 
     // Respond with student details
@@ -146,8 +151,8 @@ export const logoutController = async (req, res) => {
   // Check if refresh token is present in cookies
   if (!cookie?.refreshToken) {
     return res
-        .status(400)
-        .send({ success: false, message: "No Refresh Token in Cookies" });
+      .status(400)
+      .send({ success: false, message: "No Refresh Token in Cookies" });
   }
 
   const refreshToken = cookie.refreshToken;
@@ -162,7 +167,9 @@ export const logoutController = async (req, res) => {
         httpOnly: true,
         secure: true,
       });
-      return res.status(204).json({ success: true, message: "Logout Successfully" });
+      return res
+        .status(204)
+        .json({ success: true, message: "Logout Successfully" });
     }
 
     // Update user document to remove the refresh token
@@ -173,29 +180,31 @@ export const logoutController = async (req, res) => {
       httpOnly: true,
       secure: true,
     });
-    return res.status(204).json({ success: true, message: "Logout Successfully" });
+    return res
+      .status(204)
+      .json({ success: true, message: "Logout Successfully" });
   } catch (error) {
     console.error("Error logging out:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
-
 export const updateStudent = async (req, res) => {
   const { _id } = req.student;
-  const { address, city, gender, name, phone, dob, sem  } = req.body;
+  const { address, city, gender, name, phone, dob, sem } = req.body;
   try {
     const updatedStudent = await studentModel.findByIdAndUpdate(
-        _id,
-        { name :name,
-          address: address,
-          city:city,
-          gender:gender,
-          phone:phone,
-          dob:dob,
-          sem:sem
-        },
-        { new: true }
+      _id,
+      {
+        name: name,
+        address: address,
+        city: city,
+        gender: gender,
+        phone: phone,
+        dob: dob,
+        sem: sem,
+      },
+      { new: true }
     );
     res.json({ message: "Update done ", data: updatedStudent });
   } catch (error) {
@@ -206,7 +215,6 @@ export const updateStudent = async (req, res) => {
 
 export const updatePassword = async (req, res) => {
   try {
-
     const { _id } = req.student;
     const { password } = req.body;
 
@@ -215,11 +223,10 @@ export const updatePassword = async (req, res) => {
     }
     const hashedPassword = await hashPassword(password);
 
-
     const updatedStudent = await studentModel.findByIdAndUpdate(
-        _id,
-        { password: hashedPassword },
-        { new: true }
+      _id,
+      { password: hashedPassword },
+      { new: true }
     );
 
     res.json({ message: "Password changed successfully" });
@@ -228,7 +235,6 @@ export const updatePassword = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 // Forgot Password Token Controller
 export const forgotPasswordToken = async (req, res) => {
@@ -321,23 +327,23 @@ export const getAllStudents = async (req, res) => {
   try {
     const queryObj = { ...req.query };
     let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
     let query = studentModel.find(JSON.parse(queryStr)).sort({ enrollment: 1 });
     if (req.query.batch) {
-      query = query.where('batch').equals(req.query.batch);
+      query = query.where("batch").equals(req.query.batch);
     }
     const students = await query;
     res.status(200).json({
       success: true,
-      students
+      students,
     });
   } catch (err) {
     console.error("Error fetching students:", err);
     res.status(500).json({
       success: false,
       message: "Error fetching students",
-      error: err.message
+      error: err.message,
     });
   }
 };
@@ -350,7 +356,7 @@ export const getStudentByEnrollment = async (req, res) => {
     if (!student) {
       return res.status(404).json({
         success: false,
-        message: 'Student not found',
+        message: "Student not found",
       });
     }
 
@@ -359,10 +365,10 @@ export const getStudentByEnrollment = async (req, res) => {
       student,
     });
   } catch (err) {
-    console.error('Error fetching student:', err);
+    console.error("Error fetching student:", err);
     res.status(500).json({
       success: false,
-      message: 'Error fetching student',
+      message: "Error fetching student",
       error: err.message,
     });
   }
@@ -374,19 +380,25 @@ export const updateStudentContoller = async (req, res) => {
 
   try {
     const updatedStudent = await studentModel.findByIdAndUpdate(
-        id,
-        { name, email, department, batch },
-        { new: true } // Return the updated document
+      id,
+      { name, email, department, batch },
+      { new: true } // Return the updated document
     );
 
     if (!updatedStudent) {
-      return res.status(404).json({ success: false, message: 'Student not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Student not found" });
     }
 
     res.status(200).json({ success: true, student: updatedStudent });
   } catch (error) {
-    console.error('Error updating student:', error);
-    res.status(500).json({ success: false, message: 'Failed to update student data', error: error.message });
+    console.error("Error updating student:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update student data",
+      error: error.message,
+    });
   }
 };
 
@@ -398,14 +410,17 @@ export const getStudentAttendance = async (req, res) => {
     // Find attendance record for the student
     const attendanceRecord = await AttendanceModel.findOne({ studentId });
     if (!attendanceRecord) {
-      return res.status(404).json({ message: "Attendance record not found for the student" });
+      return res
+        .status(404)
+        .json({ message: "Attendance record not found for the student" });
     }
 
     // Filter attendance records based on selected month and year
     let filteredAttendance = attendanceRecord.attendance;
     if (year && month) {
       filteredAttendance = attendanceRecord.attendance.filter(
-          (entry) => entry.month === parseInt(month) && entry.year === parseInt(year)
+        (entry) =>
+          entry.month === parseInt(month) && entry.year === parseInt(year)
       );
     }
 
@@ -434,31 +449,40 @@ export const getStudentAttendance = async (req, res) => {
 };
 
 // import studentModel from "../Models/studentModel.js";
-import timetable from "../Models/timeTableModel.js"; 
-export const getTimeTable = async(req,res) =>{
-  try{
-    const { batch } = req.query;
-   if( !batch){
-      return res.status(400).json({
-      success: false,
-      message:"Complete all the fields "
-     });
-   }
+import timetable from "../Models/timeTableModel.js";
+export const getTimeTable = async (req, res) => {
+  try {
+    const { batch, timetableType } = req.query;
 
-console.log(batch);
-   
-    const getAllTimeTable = await timetable.findOne({ batch })
-    // console.log(getAllTimeTable.length)
-    // console.log(getAllTimeTable.timeTableURL);
+    if (!batch || !timetableType) {
+      return res.status(400).json({
+        success: false,
+        message: "Complete all the fields",
+      });
+    }
+
+    const getTimeTable = await timetable.findOne({ batch, timetableType });
+
+    if (!getTimeTable) {
+      return res.status(404).json({
+        success: false,
+        message:
+          "Timetable not found for the provided batch and timetable type",
+      });
+    }
+
     return res.status(200).json({
       success: true,
-      data: getAllTimeTable
+      data: getTimeTable,
     });
-  }catch(error){
+  } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
-}
-
+};
 
 export const getBatch = async (req, res) => {
   try {
@@ -470,8 +494,7 @@ export const getBatch = async (req, res) => {
     console.error("Error fetching all batches:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-
+};
 
 // // View MST marks
 import marksModel from "../Models/marksModel.js";
@@ -483,18 +506,29 @@ export const viewMarks = async (req, res) => {
 
     const queryObj = { semester, exam };
     let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
-    const marks = await marksModel.findOne({ ...JSON.parse(queryStr), 'students.studentId': studentId });
+    const marks = await marksModel.findOne({
+      ...JSON.parse(queryStr),
+      "students.studentId": studentId,
+    });
 
     if (!marks) {
-      return res.status(404).json({ message: 'Marks not found for the student in the specified semester and exam' });
+      return res.status(404).json({
+        message:
+          "Marks not found for the student in the specified semester and exam",
+      });
     }
 
-    const studentMarks = marks.students.find(student => student.studentId.toString() === studentId.toString());
+    const studentMarks = marks.students.find(
+      (student) => student.studentId.toString() === studentId.toString()
+    );
 
     if (!studentMarks || !studentMarks.marks) {
-      return res.status(404).json({ message: 'Marks not found for the student in the specified semester and exam' });
+      return res.status(404).json({
+        message:
+          "Marks not found for the student in the specified semester and exam",
+      });
     }
 
     res.status(200).json({ marks: studentMarks.marks });

@@ -88,22 +88,14 @@ const Update = () => {
       <Form.Item
         name="name"
         label="Name"
-        rules={[
-          {
-            required: true
-          },
-        ]}>
+        >
         <Input placeholder='Enter your Name'/>
       </Form.Item>
      
       <Form.Item
         name="sem"
         label="Semester"
-        rules={[
-          {
-            required: true
-          },
-        ]}>
+        >
       
         <Input  placeholder='(i.e) 1,2'   maxLength={1}/>
       </Form.Item>

@@ -1,79 +1,45 @@
-import { useDispatch } from 'react-redux';
-import { Descriptions } from 'antd';
-
+import { SmileOutlined } from '@ant-design/icons';
 
 const Profile = () => {
-    // const dispatch = useDispatch(); 
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+      return date.toLocaleDateString('en-GB', options); 
+  }
 
     let storedUserData = JSON.parse(sessionStorage.getItem('userData'));
 
-    // console.log(user);
-    
-
     const items = [
-        {
-          key: '1',
-          label: 'Name',
-          children: `${storedUserData.name}`,
-        },
-        {
-          key: '2',
-          label: 'Email',
-          children: `${storedUserData.email}`,
-        },
-        {
-          key: '3',
-          label: 'Department',
-          children:` ${storedUserData.department}`,
-        },
-        {
-          key: '4',
-          label: 'Enrollment No.',
-          children:` ${storedUserData.enrollment}`,
-        },
-        {
-          key: '5',
-          label: 'Batch',
-          children:` ${storedUserData.batch}`,
-        },
-        {
-          key: '6',
-          label: 'Semester',
-          children:` ${storedUserData.sem}`,
-        },
-        {
-          key: '7',
-          label: 'City',
-          children:` ${storedUserData.city}`,
-        },
-        {
-          key: '8',
-          label: 'Local Address',
-          children:` ${storedUserData.address}`,
-        },
-        {
-          key: '9',
-          label: 'dob',
-          children:` ${storedUserData.dob}`,
-        },
-        {
-          key: '10',
-          label: 'Gender',
-          children:` ${storedUserData.gender}`,
-        },
-    
-      ];
-    const dashboard = `Hello! ${storedUserData.name} `;
+        { label: 'Name', value: storedUserData.name },
+        { label: 'Email', value: storedUserData.email },
+        { label: 'Department', value: storedUserData.department },
+        { label: 'Enrollment No.', value: storedUserData.enrollment },
+        { label: 'Batch', value: storedUserData.batch },
+        { label: 'Semester', value: storedUserData.sem },
+        { label: 'City', value: storedUserData.city },
+        { label: 'Local Address', value: storedUserData.address },
+        { label: 'Date of Birth', value: formatDate(storedUserData.dob) }, 
+        { label: 'Gender', value: storedUserData.gender },
+    ];
+
     return (
-    <>
-    <fieldset style={{ border: '1px solid #ccc', padding: '10px', borderRadius: '5px' }}>
-        <Descriptions title={dashboard} items={items}  />
-    </fieldset>
-
-    </>
-
-   
-  )
+        <div style={{ padding: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                <SmileOutlined style={{ fontSize: '24px', marginRight: '10px' }} />
+                <h1 style={{ margin: 0 }}>Hello, {storedUserData.name}!</h1>
+            </div>
+            <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                <h2>User Information</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+                    {items.map(item => (
+                        <div key={item.label}>
+                            <strong>{item.label}:</strong> {item.value}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
 }
 
-export default Profile
+export default Profile;

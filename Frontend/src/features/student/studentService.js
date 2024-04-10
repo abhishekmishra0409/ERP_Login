@@ -125,13 +125,36 @@ const mstResult = async(data)=>{
   }
 }
 
+// messages api calling 
+const getMsg = async()=>{
+  try{
+    const token = getToken();
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type":"application/json",
+    };
+    const url = base_url + "student/get-message";
+    const responce = await axios.get(url,{
+      headers: headers,
+      withCredentials:true,
+    });
+    return responce.data;
+  }catch(error){
+    console.error(error);
+    throw error;
+  }
+}
+
+
+
 const studentService = {
   getAll,
   timetable,
   updatePassword,
   updateName,
   getAttendance,
-  mstResult
+  mstResult,
+  getMsg
 };
 
 export default studentService;

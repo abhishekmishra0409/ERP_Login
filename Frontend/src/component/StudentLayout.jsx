@@ -12,9 +12,7 @@ import { IoCalendarNumberOutline } from "react-icons/io5";
 import { PiChalkboardTeacherDuotone } from "react-icons/pi";
 import { MdOutlineClass } from "react-icons/md";
 import { MdOutlinePublishedWithChanges } from "react-icons/md";
-import { Avatar,Drawer } from "antd";
-
-
+import { Avatar, Drawer } from "antd";
 import { useDispatch } from "react-redux";
 import { studentLogout } from "../features/auth/authSlice";
 const { Header, Sider, Content } = Layout;
@@ -32,16 +30,14 @@ const LayoutD = () => {
   const onClose = () => {
     setVisible(false);
   };
-  
-
   const handleSignOut = () => {
     dispatch(studentLogout())
       .unwrap()
       .then(() => {
         sessionStorage.removeItem("user");
         sessionStorage.removeItem("refreshToken");
-        sessionStorage.removeItem("userData")
-        sessionStorage.removeItem("imgUrl")
+        sessionStorage.removeItem("userData");
+        sessionStorage.removeItem("imgUrl");
         navigate("/");
         message.success("Logout Successfully!");
       })
@@ -51,10 +47,8 @@ const LayoutD = () => {
       });
   };
 
-
   const user = JSON.parse(sessionStorage.getItem("userData"));
 
-// console.log(user);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -67,7 +61,7 @@ const LayoutD = () => {
     },
     {
       key: "update",
-      icon: <RxUpdate className="fs-5"/>,
+      icon: <RxUpdate className="fs-5" />,
       label: "Update Details",
     },
     {
@@ -87,7 +81,7 @@ const LayoutD = () => {
     },
     {
       key: "changepassword",
-      icon: <MdOutlinePublishedWithChanges  className="fs-5" />,
+      icon: <MdOutlinePublishedWithChanges className="fs-5" />,
       label: "Update Password",
     },
     {
@@ -138,13 +132,13 @@ const LayoutD = () => {
               height: 64,
             }}
           />
-          <div >
-            <div  style={{height:'100%', display:'flex', justifyContent:'center', alignItems:'center'}}>
-              <div >
+          <div>
+            <div style={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+              <div>
                 {user ? (
                   <>
                     <Avatar
-                      style={{ cursor: 'pointer',backgroundColor: '#fde3cf', color: '#f56a00'  }}
+                      style={{ cursor: "pointer", backgroundColor: "#fde3cf", color: "#f56a00" }}
                       size={35}
                       icon={<UserOutlined />}
                       onClick={showProfile}
@@ -156,25 +150,30 @@ const LayoutD = () => {
                       onClose={onClose}
                       open={visible}
                     >
-                    <div style={{display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column', width:'100%'}}>
-
-                      <Avatar 
-                      size={60} 
-                      style={{backgroundColor: '#fde3cf', color: '#f56a00'}} 
-                      icon={<UserOutlined />} />
-                      <h3>{user.name}</h3>
-                      <p>{user.email}</p>
-                      
-                    </div>
-                    <div style={{paddingTop:"10px"}}>
-                    <button style={{width:'100%',border:'0.2px solid grey', backgroundColor:'white'}} onClick={()=> navigate("/student/profile") }>Profile</button>
-                    <button style={{width:'100%',border:'0 0.2px solid grey', backgroundColor:'white' }} onClick={()=> navigate("/student/update") }>Update Profile</button>
-                  
-                    </div>
+                      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", width: "100%" }}>
+                        <Avatar
+                          size={60}
+                          style={{ backgroundColor: "#fde3cf", color: "#f56a00" }}
+                          icon={<UserOutlined />}
+                        />
+                        <h3>{user.name}</h3>
+                        <p>{user.email}</p>
+                      </div>
+                      <div style={{ paddingTop: "10px" }}>
+                        <button style={{width: "100%",border: "none",backgroundColor: "transparent",padding: "10px",cursor: "pointer",color: "#1890ff",fontWeight: "bold",}} onClick={() => {navigate("/student/profile");onClose()}}>
+                          Profile
+                        </button>
+                        <button style={{width: "100%",border: "none",backgroundColor: "transparent",padding: "10px",cursor: "pointer",color: "#1890ff",fontWeight: "bold"}} onClick={() => {navigate("/student/update");onClose()}}>
+                          Update Profile
+                        </button>
+                        <button style={{width: "100%",border: "none",backgroundColor: "transparent",padding: "10px",cursor: "pointer",color: "#1890ff",fontWeight: "bold"}} onClick={() => {navigate("/student/changepassword");onClose()}}>
+                          Update Password
+                        </button>
+                      </div>
                     </Drawer>
                   </>
                 ) : (
-                  <h5 className="mb-0">{user.email}</h5>  
+                  <h5 className="mb-0">{user.email}</h5>
                 )}
               </div>
             </div>
@@ -185,15 +184,13 @@ const LayoutD = () => {
             margin: "24px 16px",
             padding: 24,
             minHeight: 280,
-            maxHeight: "calc(100vh - 112px)", 
+            maxHeight: "calc(100vh - 112px)",
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
-            overflow: 'auto' ,
-            scrollbarWidth: 'none',
-            // scrollbarColor: '#888 transparent' 
+            overflow: "auto",
+            scrollbarWidth: "none",
           }}
         >
-        
           <Outlet />
         </Content>
       </Layout>

@@ -79,11 +79,74 @@ const postMarks = async (marksData) => {
     }
 };
 
+const sendMsg = async( sendedMessage ) =>{
+    try{
+        const url = base_url + "teacher/send-message";
+        const token = getToken();
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        };
+        const response = await axios.post(url, sendedMessage, {
+            headers: headers,
+            withCredentials: true,
+        });
+        // console.log(response);
+        return response.data;
+    }catch(error){
+        console.error("Error occurred "+error);
+        throw error;
+    }
+}
+
+const getMsg = async() =>{
+    try{
+        const url = base_url+"teacher/get-teacher-msg";
+        const token = getToken();
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        };
+        const response = await axios.get(url, {
+            headers: headers,
+            withCredentials: true,
+        });
+        // console.log(response);
+        return response.data;
+    }catch(error){
+        console.error("Error occurred "+error);
+        throw error;
+    }
+    
+}
+
+const dltMsg = async(_id) =>{
+    try {
+        const url = base_url + `teacher/delete-msg/${_id}`;
+        const token = getToken();
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        };
+        const response = await axios.delete(url, {
+            headers: headers,
+            withCredentials: true,
+        });
+        // console.log(response);
+        return response.data;
+    } catch (error) {
+        console.error("Error occurred ", error);
+        throw error;
+    }
+}
 const teacherService = {
     getBatches,
     getStudentByBatch,
     uploadTimeTable,
     postMarks,
+    sendMsg,
+    getMsg,
+    dltMsg
 };
 
 export default teacherService;

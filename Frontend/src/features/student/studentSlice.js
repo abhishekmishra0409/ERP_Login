@@ -81,6 +81,21 @@ export const mstNumbers = createAsyncThunk(
     }
   }
 )
+// messages async thunk 
+export const getMessage = createAsyncThunk(
+  "student/message",
+  async() =>{
+    try{
+      const responce = await studentService.getMsg();
+      return responce;
+    }catch(error){
+      console.error(error);
+      throw error;
+    }
+  }
+)
+export 
+
 
 const studentSlice = createSlice({
   name: "student",

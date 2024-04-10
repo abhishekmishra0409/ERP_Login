@@ -53,6 +53,47 @@ export const postMarks = createAsyncThunk(
   }
 );
 
+export const sendYourMsg = createAsyncThunk(
+  "teacher/send-message",
+  async (sendMessage) => {
+    try{
+        const res = await teacherService.sendMsg(sendMessage);
+        // console.log(res);
+          return res;
+    }catch(error){
+      console.error("Error occurred "+error);
+      throw error;
+    }
+  }
+)
+
+export const getYourMsg = createAsyncThunk(
+  "teacher/get-message",
+  async() =>{
+    try{
+      const res = await teacherService.getMsg();
+      // console.log(res);
+        return res;
+    }catch(error){
+      console.error(error);
+      throw error;
+    }
+  }
+)
+
+export const deleteMsg = createAsyncThunk(
+  "teacher/delete-message",
+  async(_id) =>{
+    try{
+    const dlt = await teacherService.dltMsg(_id);
+      // console.log(dlt);
+      return dlt;
+    }catch(error){
+      console.error(error);
+      throw error;
+    }
+  }
+)
 const initialState = {
   batches: [],
   students: [],

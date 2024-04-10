@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Login from './pages/Login';
-import Student from './pages/Student/Student';
+import Student from './pages/Student/Message';
 import Update from './pages/Student/Update';
 import TimeTable from './pages/Student/Timetable';
 import Teacher from './pages/Teacher/Teacher';
