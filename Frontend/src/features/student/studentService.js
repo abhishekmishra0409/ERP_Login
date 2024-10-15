@@ -56,7 +56,7 @@ const updatePassword = async (password) => {
       "Content-Type": "application/json",
     };
     const url = base_url + "student/password";
-    const response = await axios.put(url, password, {
+    const response = await axios.put(url, {
       headers: headers,
       withCredentials: true,
     });

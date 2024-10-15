@@ -448,7 +448,7 @@ export const getStudentAttendance = async (req, res) => {
   }
 };
 
-// import studentModel from "../Models/studentModel.js";
+
 import timetable from "../Models/timeTableModel.js";
 export const getTimeTable = async (req, res) => {
   try {

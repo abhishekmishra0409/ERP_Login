@@ -1,43 +1,42 @@
-import { useState } from 'react';
-import { Form, Input, Button, message, Radio } from 'antd';
-import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
-import { studentLogin, teacherLogin } from '../features/auth/authSlice';
-import { Link, useNavigate } from 'react-router-dom';
-import { studentProfile } from '../features/student/studentSlice';
-import { fetchBatches } from '../features/teacher/teacherSlice';
-
+import { useState } from "react";
+import { Form, Input, Button, message, Radio } from "antd";
+import { MailOutlined, LockOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { studentLogin, teacherLogin } from "../features/auth/authSlice";
+import { Link, useNavigate } from "react-router-dom";
+import { studentProfile } from "../features/student/studentSlice";
+import { fetchBatches } from "../features/teacher/teacherSlice";
 
 const Login = () => {
-  const [userType, setUserType] = useState('student');
+  const [userType, setUserType] = useState("student");
   const dispatch = useDispatch();
   const navigateTo = useNavigate();
 
   const onFinish = async (values) => {
     try {
-      if (userType === 'student') {
+      if (userType === "student") {
         await dispatch(studentLogin(values)).unwrap();
         await dispatch(studentProfile());
-      
-        navigateTo('/student');
-      } else if (userType === 'teacher') {
+        navigateTo("/student");
+        // console.log(values);
+      } else if (userType === "teacher") {
         await dispatch(teacherLogin(values)).unwrap();
-        navigateTo('/teacher');
-        dispatch(fetchBatches())
+        navigateTo("/teacher");
+        dispatch(fetchBatches());
       }
-      message.success('Login successful!');
+      message.success("Login successful!");
     } catch (error) {
-      console.error('Login error:', error);
-      message.error('Wrong password');
+      console.error("Login error:", error);
+      message.error("Wrong password");
     }
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    console.log("Failed:", errorInfo);
   };
 
   return (
-    <div className="py-5" style={{ background: '#FFFFF0', minHeight: '100vh' }}>
+    <div className="py-5" style={{ background: "#FFFFF0", minHeight: "100vh" }}>
       <br />
       <br />
       <br />
@@ -45,7 +44,7 @@ const Login = () => {
       <br />
       <div
         className="my-5 w-25 rounded-3 mx-auto p-4 border"
-        style={{ background: 'white' }}
+        style={{ background: "white" }}
       >
         <h3 className="text-center title">Login</h3>
         <p className="text-center">Login to your account to continue.</p>
@@ -64,56 +63,65 @@ const Login = () => {
           }}
           initialValues={{
             remember: true,
+            email: "email@gmail.com",
+            password: "123456",
           }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
           <Form.Item label="User Type">
-            <Radio.Group defaultValue={userType} onChange={(e) => setUserType(e.target.value)}>
+            <Radio.Group
+              defaultValue={userType}
+              onChange={(e) => setUserType(e.target.value)}
+            >
               <Radio.Button value="student">Student</Radio.Button>
               <Radio.Button value="teacher">Teacher</Radio.Button>
             </Radio.Group>
           </Form.Item>
-            <label >Email</label>
+          <label>Email</label>
           <Form.Item
             name="email"
             rules={[
               {
-                type: 'email',
+                type: "email",
                 required: true,
-                message: 'Please input your Email!',
+                message: "Please input your Email!",
+                value:"email@gmail.com"
               },
             ]}
           >
-            <Input prefix={<MailOutlined />} style={{ width: '150%' }} />
+            <Input prefix={<MailOutlined />} style={{ width: "150%" }} />
           </Form.Item>
-          <label >Password</label>
+          <label>Password</label>
           <Form.Item
             name="password"
             rules={[
               {
                 required: true,
-                message: 'Please input your password!',
+                message: "Please input your password!",
               },
             ]}
           >
-            <Input.Password prefix={<LockOutlined />} style={{ width: '150%' }} />
+            <Input.Password
+              prefix={<LockOutlined />}
+              style={{ width: "150%" }}
+            />
           </Form.Item>
-          
-          <div className="mb-3 text-end">
-            <Link to="forgot-password" className="">
-              Forgot Password?
-            </Link>
-          </div>
-          
+
+          {/*<div className="mb-3 text-end">*/}
+          {/*  <Link to="forgot-password" className="">*/}
+          {/*    Forgot Password?*/}
+          {/*  </Link>*/}
+          {/*</div>*/}
+
           <Form.Item
             wrapperCol={{
               offset: 0,
               span: 16,
             }}
           >
-            <Button type="primary" htmlType="submit" style={{ width: '150%' }}>
+            <Button type="primary" htmlType="submit" style={{ width: "150%" }}>
               Login
             </Button>
           </Form.Item>
