@@ -19,23 +19,32 @@ cloudinaryConfig();
 
 //middleware
 app.use(express.json());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5175',
+  'http://localhost:5174',
+  'https://erp-login-wheat.vercel.app/',
+  'http://erp-login-wheat.vercel.app/',
+  'https://erp-login-abhishekmishra0409s-projects.vercel.app/',
+  'https://erp-login-git-main-abhishekmishra0409s-projects.vercel.app/'
+];
+
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:5175',
-    'http://localhost:5174',
-    'https://erp-login-wheat.vercel.app/',
-    'http://erp-login-wheat.vercel.app/',
-    'https://erp-login-abhishekmishra0409s-projects.vercel.app/',
-    'https://erp-login-git-main-abhishekmishra0409s-projects.vercel.app/'
-  ],
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization'
-  ],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// Allow preflight requests for all routes
+app.options('*', cors());
+
 
 app.use(morgan("dev"));
 app.use(fileUpload({
