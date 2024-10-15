@@ -45,7 +45,11 @@ app.use(cors({
 
 // Allow preflight requests for all routes
 app.options('*', cors());
-
+app.use((req, res, next) => {
+  console.log(`Request Origin: ${req.headers.origin}`);
+  console.log('Request Headers:', req.headers);
+  next();
+});
 
 app.use(morgan("dev"));
 app.use(fileUpload({
