@@ -37,34 +37,10 @@ const login = async (user, userType) => {
 
 const logout = async (userType) => {
   try {
-    let logoutEndpoint = "";
-    if (userType === "student") {
-      logoutEndpoint = `${base_url}student/logout`;
-    } else if (userType === "teacher") {
-      logoutEndpoint = `${base_url}teacher/logout`;
-    } else {
-      throw new Error("Invalid user type");
-    }
 
-    const token = getToken();
-    const headers = {
-      Authorization: token,
-      "Content-Type": "application/json",
-    };
-
-    const response = await fetch(logoutEndpoint, {
-      method: "GET",
-      headers: headers,
-      credentials: "include",
-    });
-
-    if (response.ok) {
       sessionStorage.removeItem("refreshToken");
       sessionStorage.removeItem("user");
-    } else {
-      const errorData = await response.json();
-      throw new Error(`Logout failed: ${errorData.message}`);
-    }
+
   } catch (error) {
     console.error("Logout failed:", error);
     throw error;
