@@ -26,7 +26,8 @@ const allowedOrigins = [
   'https://erp-login-wheat.vercel.app/',
   'http://erp-login-wheat.vercel.app/',
   'https://erp-login-abhishekmishra0409s-projects.vercel.app/',
-  'https://erp-login-git-main-abhishekmishra0409s-projects.vercel.app/'
+  'https://erp-login-git-main-abhishekmishra0409s-projects.vercel.app/',
+    'https://erp-login.onrender.com'
 ];
 
 app.use(cors({
