@@ -20,11 +20,23 @@ cloudinaryConfig();
 //middleware
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5175','http://localhost:5174',"https://erp-login-wheat.vercel.app/","http://erp-login-wheat.vercel.app/","https://erp-login-abhishekmishra0409s-projects.vercel.app/","https://erp-login-git-main-abhishekmishra0409s-projects.vercel.app/"],
-  methods: ['GET', 'POST','PUT','DELETE'],
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5175',
+    'http://localhost:5174',
+    'https://erp-login-wheat.vercel.app/',
+    'http://erp-login-wheat.vercel.app/',
+    'https://erp-login-abhishekmishra0409s-projects.vercel.app/',
+    'https://erp-login-git-main-abhishekmishra0409s-projects.vercel.app/'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization'
+  ],
 }));
+
 app.use(morgan("dev"));
 app.use(fileUpload({
   useTempFiles: true,
