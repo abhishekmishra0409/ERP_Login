@@ -6,7 +6,7 @@ import {
 import studentModel from "../Models/studentModel.js";
 import generateRefreshToken from "../Helper/JwtToken.js";
 import sendEmail from "../Helper/EmailSend.js";
-import AttendanceModel from "../models/attendanceModel.js";
+import AttendanceModel from "../Models/attendanceModel.js";
 
 export const registerController = async (req, res) => {
   try {
